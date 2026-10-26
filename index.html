@@ -125,6 +125,12 @@ textarea:focus{border-color:var(--acid);outline:0}
 .cmp>div.m2{background:#2a2410;border:2px solid var(--gold)}
 .flip{min-height:240px;width:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:var(--acid);color:var(--ink);border:0;border-bottom:6px solid var(--acid-d);border-radius:24px;font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.02em;line-height:1.05}
 .flip small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;margin-top:14px;opacity:.7;font-weight:500}
+.vcell{display:flex;flex-direction:column;gap:6px}
+.vcard{width:100%;min-height:120px;padding:14px;border-radius:18px;border:2px solid var(--line);border-bottom-width:5px;background:var(--surf2);color:var(--text);font:700 18px/1.2 var(--display);text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:8px;transition:transform .08s}
+.vcard.en{background:var(--acid);color:var(--ink);border-color:var(--acid);border-bottom-color:var(--acid-d)}
+.vcard .ex{font:italic 400 13px/1.4 var(--sans)}
+.vcard small{font-family:var(--mono);font-size:10px;letter-spacing:.08em;opacity:.7;font-weight:500}
+.vcard:active{transform:translateY(3px);border-bottom-width:2px}
 .ring{position:relative;width:96px;height:96px;flex-shrink:0}
 .ring svg{width:96px;height:96px;transform:rotate(-90deg)}
 .ring .v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:22px}
@@ -176,7 +182,7 @@ const EXHIBITS = [
     author:'Francesco Pira, sociologo, Università di Messina · QdS (Quotidiano di Sicilia), 16 ottobre 2026',
     intro:"Il seguente articolo di Francesco Pira, professore di Sociologia all'Università di Messina, pubblicato sul Quotidiano di Sicilia (QdS) il 16 ottobre 2026, commenta i risultati della Survey Teen 2026 su adolescenti e social network (Ipsos Doxa per Fondazione Libellula).",
     url:'https://qds.it/adolescenti-social-paradosso-generazione-riconoscono-rischi-ma-hanno-paura-di-dire-no/',
-    minutes:35,
+    minutes:45,
     analysis:[
       { k:'tesi',     label:'Tesi',            hint:"Cosa sostiene l'autore? Una frase, con parole tue." },
       { k:'prove',    label:'Prove',           hint:"Quali dati o esempi usa per sostenerla? Cita almeno due numeri." },
@@ -189,14 +195,27 @@ const EXHIBITS = [
       registro:"Formale e divulgativo: un sociologo cita ricerche e studiosi (Bourdieu, Goffman) e si rivolge a un pubblico adulto, cioè scuole e famiglie, con un tono di appello più che di accusa.",
       lente:"Mostra una società in cui scuola e famiglia restano i luoghi educativi centrali: la famiglia è ancora il «principale riferimento emotivo», ma la solitudine e la pressione del gruppo pesano soprattutto sulle ragazze."
     },
-    chunks:[
-      { it:'prendere posizione',            en:'to take a stand' },
-      { it:'il costo sociale del dissenso', en:'the social cost of disagreeing' },
-      { it:'una rete di sostegno',          en:'a support network' },
-      { it:'sottrarsi a qualcosa',          en:'to escape / withdraw from something' },
-      { it:'la pressione estetica',         en:'the pressure to look a certain way' },
-      { it:'essere consapevole di',         en:'to be aware of' },
-      { it:'riconoscere i rischi',          en:'to recognize the risks' }
+    vocab:[
+      { it:'prendere posizione',                  en:'to take a stand',                      ex:"Quando un amico dice qualcosa di ingiusto, è difficile prendere posizione." },
+      { it:'il costo sociale del dissenso',       en:'the social cost of disagreeing',       ex:"Molti tacciono perché temono il costo sociale del dissenso." },
+      { it:'una rete di sostegno',                en:'a support network',                    ex:"Senza una rete di sostegno, nessuno trova il coraggio di parlare." },
+      { it:'sottrarsi alla pressione del gruppo', en:'to escape peer pressure',              ex:"Per un adolescente è difficile sottrarsi alla pressione del gruppo." },
+      { it:'la pressione estetica',               en:'the pressure to look a certain way',   ex:"I social aumentano la pressione estetica, soprattutto sulle ragazze." },
+      { it:'essere consapevole di',               en:'to be aware of',                       ex:"Sono consapevole dei rischi, ma continuo a usare i social." },
+      { it:'riconoscere i rischi',                en:'to recognize the risks',               ex:"Imparare a riconoscere i rischi online è il primo passo." },
+      { it:'smontare gli stereotipi',             en:'to take apart / debunk stereotypes',   ex:"A scuola possiamo imparare a smontare gli stereotipi." },
+      { it:'restare in silenzio',                 en:'to stay silent',                       ex:"Davanti al gruppo, molti ragazzi restano in silenzio." },
+      { it:'sentirsi solo',                       en:'to feel alone',                        ex:"Anche con mille follower, uno può sentirsi solo." },
+      { it:'ottenere approvazione',               en:'to gain approval',                     ex:"Molti modificano le foto per ottenere approvazione dagli altri." },
+      { it:'un gesto collettivo',                 en:'a collective act',                     ex:"Dire di no insieme è un gesto collettivo, non un atto di coraggio isolato." }
+    ],
+    write:[
+      { i:0,  hint:"About a time a friend says something unfair. What do you do, or not do?" },
+      { i:2,  hint:"About what helps people speak up (school, family, friends)." },
+      { i:5,  hint:"About something online that you know is a problem." },
+      { i:3,  hint:"About peer pressure at school or online." },
+      { i:9,  hint:"About being online and feeling alone: yours or someone else's." },
+      { i:10, hint:"About why people edit their photos." }
     ],
     mc:[
       { q:"Qual è la tesi centrale dell'articolo di Pira?",
@@ -409,9 +428,10 @@ function progressOf(X){
   const st = ex(X.id);
   if (st.filed) return 100;
   if (st.step === 'leggi') return 0;
-  if (st.step === 'analisi') return 25;
-  if (st.step === 'domande') return 50 + Math.round((st.answers.filter(function(x){ return x != null; }).length / X.mc.length) * 40);
-  return 90;
+  if (st.step === 'vocab') return 15;
+  if (st.step === 'analisi') return 35;
+  if (st.step === 'domande') return 55 + Math.round((st.answers.filter(function(x){ return x != null; }).length / X.mc.length) * 35);
+  return 92;
 }
 function ring(pct, color, trackColor, textColor){
   const R = 40, C = 2 * Math.PI * R;
@@ -435,7 +455,7 @@ function viewOggi(){
       h('div', { style:'display:flex;gap:18px;align-items:center;justify-content:space-between' },
         h('div', { class:'big' }, next.short),
         ring(pct, '#0D0D11', 'rgba(13,13,17,.18)', '#0D0D11')),
-      h('div', { class:'mute', style:'font-size:14px' }, '~' + next.minutes + ' minutes · read it, break it down, answer six, file it.'),
+      h('div', { class:'mute', style:'font-size:14px' }, '~' + next.minutes + ' minutes · read it, learn the words, break it down, answer six, file it.'),
       h('div', { class:'row', style:'margin-top:4px' },
         h('a', { class:'btn', style:'background:#0D0D11;color:#C8FF3D;border-bottom-color:#000', href:'#/prova/' + next.id }, st.step === 'leggi' ? 'Start →' : 'Keep going →')));
   } else {
@@ -537,9 +557,9 @@ function viewArchivio(){
    VIEW: PROVA
    ============================================================ */
 function segs(cur){
-  const order = ['leggi', 'analisi', 'domande', 'esito'];
+  const order = ['leggi', 'vocab', 'analisi', 'domande', 'esito'];
   const idx = order.indexOf(cur);
-  return h('div', { class:'segs', role:'img', 'aria-label':'Step ' + (idx + 1) + ' of 4' }, order.map(function(_, i){ return h('i', { class: i <= idx ? 'on' : '' }); }));
+  return h('div', { class:'segs', role:'img', 'aria-label':'Step ' + (idx + 1) + ' of 5' },order.map(function(_, i){ return h('i', { class: i <= idx ? 'on' : '' }); }));
 }
 
 function readingPane(X, st){
@@ -550,7 +570,7 @@ function readingPane(X, st){
     ? h('div', { class:'body' }, paras.map(function(p){ return h('p', {}, p); }),
         h('button', { class:'btn alt sm', onclick:function(){ st.localText = ''; save(); render(); } }, 'Clear pasted text'))
     : h('div', {},
-        h('p', { style:'font-size:14px;color:#55535f;margin:0 0 10px' }, "This tool doesn't contain the article (it's copyrighted). Open it at the source, or paste the text below. It stays only on this computer."),
+        h('p', { style:'font-size:14px;color:#55535f;margin:0 0 10px' }, "If the link is blocked at school, your teacher gives you the text: copy it, paste it in the box below, then tap Show. It saves only on this device. (This tool doesn't hold the article itself because it's copyrighted.)"),
         ta,
         h('div', { class:'row' }, h('button', { class:'btn alt sm', style:'background:#0D0D11;color:#fff', onclick:function(){ st.localText = ta.value; save(); render(); } }, 'Show the text here')));
   return h('div', { class:'card paper reading' },
@@ -564,10 +584,77 @@ function readingPane(X, st){
 
 function stepRead(X, st){
   return h('div', { class:'card' }, segs('leggi'),
-    h('div', { class:'mono mute' }, 'Step 1 of 4 · Leggi'),
+    h('div', { class:'mono mute' }, 'Step 1 of 5 · Leggi'),
     h('h2', { style:'font-size:32px' }, 'Read to understand, not to translate.'),
     h('p', { style:'margin:0' }, 'One careful pass (about 6–8 minutes, like the exam). Don\'t chase every word. Catch what the author claims and which numbers back it up.'),
-    h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ st.step = 'analisi'; save(); render(); } }, 'I read it → breakdown')));
+    h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ st.step = 'vocab'; save(); render(); } }, 'I read it → vocabulary')));
+}
+
+function okSentence(t){ t = (t || '').trim(); return t.length >= 20 && t.split(/\s+/).length >= 4; }
+
+function stepVocab(X, st){
+  st.sentences = st.sentences || {};
+  st.known = st.known || {};
+  const knownTxt = h('span', { class:'mono mute' });
+  function updKnown(){ knownTxt.textContent = Object.keys(st.known).filter(function(k){ return st.known[k]; }).length + ' / ' + X.vocab.length + ' marked as known'; }
+  updKnown();
+  const cells = X.vocab.map(function(v, i){
+    let showEn = false;
+    const side = h('span', {}, v.it);
+    const exl = h('span', { class:'ex', style:'display:none' }, '«' + v.ex + '»');
+    const hint = h('small', {}, 'TAP FOR MEANING');
+    const card = h('button', { class:'vcard', 'aria-label':'Flip card: ' + v.it }, side, exl, hint);
+    card.addEventListener('click', function(){
+      showEn = !showEn;
+      side.textContent = showEn ? v.en : v.it;
+      exl.style.display = showEn ? 'block' : 'none';
+      hint.textContent = showEn ? 'TAP FOR ITALIAN' : 'TAP FOR MEANING';
+      card.classList.toggle('en', showEn);
+    });
+    const chip = h('button', { class:'chip' + (st.known[i] ? ' on' : ''), 'aria-pressed':st.known[i] ? 'true' : 'false' }, st.known[i] ? 'KNOWN ✓' : 'MARK AS KNOWN');
+    chip.addEventListener('click', function(){
+      st.known[i] = !st.known[i]; save();
+      chip.classList.toggle('on', !!st.known[i]);
+      chip.setAttribute('aria-pressed', st.known[i] ? 'true' : 'false');
+      chip.textContent = st.known[i] ? 'KNOWN ✓' : 'MARK AS KNOWN';
+      updKnown();
+    });
+    return h('div', { class:'vcell' }, card, chip);
+  });
+  const btn = h('button', { class:'btn', disabled:true }, 'On to the breakdown →');
+  function ready(){ return X.write.every(function(w){ return okSentence(st.sentences[w.i]); }); }
+  function refresh(){ if (ready()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', ''); }
+  btn.addEventListener('click', function(){ if (!ready()) return; st.step = 'analisi'; save(); render(); });
+  const fields = X.write.map(function(w, k){
+    const v = X.vocab[w.i];
+    const id = 's-' + w.i;
+    const cnt = h('div', { class:'cnt' });
+    const ta = h('textarea', { id:id, 'aria-describedby':id + '-h', style:'min-height:96px' });
+    ta.value = st.sentences[w.i] || '';
+    function upd(){ cnt.textContent = okSentence(ta.value) ? 'Good length' : 'Write a full sentence: at least 4 words'; }
+    ta.addEventListener('input', function(){ st.sentences[w.i] = ta.value; save(); upd(); refresh(); });
+    upd();
+    return h('div', { class:'field' }, h('label', { for:id }, (k + 1) + '. ' + v.it), h('p', { class:'hint', id:id + '-h' }, w.hint), ta, cnt);
+  });
+  refresh();
+  return h('div', { class:'card' }, segs('vocab'),
+    h('div', { class:'mono mute' }, 'Step 2 of 5 · Vocabolario'),
+    h('h2', { style:'font-size:32px' }, 'Learn the chunks. Then use them.'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Twelve phrases from the article. Tap a card to see the meaning and an example. Learn whole phrases, not single words.'),
+    h('div', { style:'display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px' }, cells),
+    knownTxt,
+    h('h2', { style:'font-size:26px;margin-top:10px' }, 'Now make your own sentences'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Six chunks, six sentences about your own life. In Italian. You can change the verb ending, but keep the phrase.'),
+    fields, h('div', { class:'row' }, btn));
+}
+
+function vocabReview(X, st){
+  const items = (X.write || []).filter(function(w){ return st.sentences && st.sentences[w.i]; });
+  if (!items.length) return null;
+  return h('div', {}, h('div', { class:'mono mute', style:'margin-bottom:6px' }, 'Your sentences'),
+    items.map(function(w){
+      return h('div', { class:'rev', style:'flex-direction:column;gap:4px' }, h('span', { class:'mono', style:'color:#C8FF3D' }, X.vocab[w.i].it), h('span', {}, st.sentences[w.i]));
+    }));
 }
 
 function stepAnalysis(X, st){
@@ -587,7 +674,7 @@ function stepAnalysis(X, st){
   });
   refresh();
   return h('div', { class:'card' }, segs('analisi'),
-    h('div', { class:'mono mute' }, 'Step 2 of 4 · Analisi'),
+    h('div', { class:'mono mute' }, 'Step 3 of 5 · Analisi'),
     h('h2', { style:'font-size:32px' }, 'Break it down in four lines.'),
     h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Write in Italian. After you file, you\'ll see the Prof\'s model next to yours.'),
     fields, h('div', { class:'row' }, btn));
@@ -605,7 +692,7 @@ function stepQuestions(X, st){
   });
   const last = qi === X.mc.length - 1;
   return h('div', { class:'card' }, segs('domande'),
-    h('div', { class:'mono mute' }, 'Step 3 of 4 · Question ' + (qi + 1) + ' of ' + X.mc.length),
+    h('div', { class:'mono mute' }, 'Step 4 of 5 · Question ' + (qi + 1) + ' of ' + X.mc.length),
     h('div', { class:'stem' }, Q.q), h('div', { class:'stack', style:'gap:10px' }, opts),
     answered ? h('div', { class:'why', role:'status' }, h('strong', {}, chosen === Q.a ? 'Yes. ' : 'Not quite. '), Q.why) : null,
     answered ? h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ if (last){ st.step = 'esito'; } else { st.qi = qi + 1; } save(); render(); } }, last ? 'See the result →' : 'Next →')) : null);
@@ -622,7 +709,7 @@ function stepResult(X, st){
       h('span', {}, h('strong', {}, (i + 1) + '. '), q.q, h('br'), h('span', { class:'mute' }, q.why)));
   });
   return h('div', { class:'card' }, segs('esito'),
-    h('div', { class:'mono mute' }, 'Step 4 of 4 · Esito'),
+    h('div', { class:'mono mute' }, 'Step 5 of 5 · Esito'),
     h('div', { class:'bigscore' }, sc, h('span', { style:'font-size:28px;color:#A9A6B4' }, ' / ' + X.mc.length)),
     h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'This number isn\'t a skill score. It shows where the reading broke. Skim the notes below, then file it.'),
     review,
@@ -644,6 +731,7 @@ function filedPanel(X, st){
     h('div', { class:'big' }, 'Filed. ' + st.score + ' / ' + X.mc.length + ' on the questions.'),
     h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'It\'s in your archive and the hearing can use it. Compare your breakdown with the model: they don\'t need to match, but they should hit the same four points.'),
     mine,
+    vocabReview(X, st),
     h('div', { class:'row' }, h('a', { class:'btn', href:'#/udienza' }, 'Run the hearing'), h('a', { class:'btn alt', href:'#/' }, 'Back to today')));
 }
 
@@ -654,6 +742,7 @@ function viewProva(id){
   let right;
   if (st.filed) right = filedPanel(X, st);
   else if (st.step === 'leggi') right = stepRead(X, st);
+  else if (st.step === 'vocab') right = stepVocab(X, st);
   else if (st.step === 'analisi') right = stepAnalysis(X, st);
   else if (st.step === 'domande') right = stepQuestions(X, st);
   else right = stepResult(X, st);
@@ -670,7 +759,7 @@ function buildDeck(){
   const qs = [], cs = [];
   filedList().forEach(function(X){
     X.mc.forEach(function(q){ qs.push(q); });
-    X.chunks.forEach(function(c){ cs.push(c); });
+    X.vocab.forEach(function(c){ cs.push(c); });
   });
   const picked = shuffle(qs).slice(0, 5).map(function(q){
     const o = shuffle(q.o.map(function(t, i){ return { t:t, i:i }; }));
