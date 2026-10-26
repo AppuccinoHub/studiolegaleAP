@@ -285,6 +285,46 @@ const EXHIBITS = [
            "Lasciare che i ragazzi risolvano da soli le dinamiche del gruppo."],
         a:0, why:"Per l'autore «non basta fornire informazioni o vietare contenuti»: serve rendere il dissenso un gesto collettivo, con scuola e famiglia." }
     ]
+  },
+  {
+    /* SAMPLE LISTENING EXHIBIT: original script written for testing; invented numbers. draft:true keeps it out of the student's path.
+       Teacher preview: open  #/prova/a01  . To use as a real exhibit, record it (or load a real recording), then remove draft:true. */
+    id:'a01', kind:'ascolto', draft:true, sample:true, caso:1, n:2, type:'ASCOLTO',
+    title:'Voci giovani: identità e social (SAMPLE)',
+    short:'Un programma radio sui social e l’identità.',
+    author:'Script originale della Prof, per esercizio · dati inventati',
+    intro:"Una breve trasmissione radiofonica scritta per provare questa sezione. I numeri e le persone sono inventati.",
+    url:'',
+    minutes:25,
+    detail:[
+      { k:'num',      label:'Numeri',              hint:'Write each number you hear and what it measures.' },
+      { k:'contrast', label:'Parole di contrasto', hint:'Which word brings in a different opinion? Who says it?' },
+      { k:'voices',   label:'Chi dice cosa',       hint:'List each speaker and their opinion in a few words.' }
+    ],
+    model:{
+      gist:"Il programma parla di come i social influenzano l'identità degli adolescenti: i ragazzi si sentono liberi online ma anche giudicati, e gli esperti consigliano un equilibrio.",
+      num:"70% dei ragazzi tra 14 e 18 anni controlla il telefono entro dieci minuti dal risveglio (dato inventato per l'esercizio).",
+      contrast:"«Tuttavia» e «invece» introducono l'opinione di Luca, diversa da quella di Marta.",
+      voices:"Marta, 17 anni: pubblica solo le foto migliori per non deludere gli amici. Luca: i social gli permettono di mostrare chi è davvero. Gli esperti: serve equilibrio."
+    },
+    transcript:"Buongiorno a tutti e benvenuti a «Voci giovani». Oggi parliamo di identità e social. Secondo un'indagine recente, il 70 per cento dei ragazzi tra i quattordici e i diciotto anni controlla il telefono entro dieci minuti dal risveglio. Molti dicono di sentirsi più liberi online, ma allo stesso tempo ammettono di sentirsi giudicati. Marta, diciassette anni, racconta: «Pubblico solo le foto venute meglio, perché non voglio deludere i miei amici». Tuttavia, non tutti la pensano così. Luca, invece, sostiene che i social gli permettono di mostrare davvero chi è, soprattutto la sua passione per la musica. Gli esperti consigliano un equilibrio: usare i social con attenzione, senza dimenticare gli amici in carne e ossa. E voi, che cosa ne pensate? Scriveteci!",
+    mc:[
+      { q:"Qual è il tema del programma?",
+        o:["L'identità dei giovani e i social","Le vacanze estive degli studenti","La musica italiana","Lo sport a scuola"],
+        a:0, why:"Il conduttore lo dice subito: «Oggi parliamo di identità e social»." },
+      { q:"Secondo l'indagine, quale percentuale dei ragazzi controlla il telefono entro dieci minuti dal risveglio?",
+        o:["Il 17%","Il 18%","Il 70%","Il 10%"],
+        a:2, why:"70 per cento. Attenzione ai numeri simili: 17 è l'età di Marta, 18 il limite d'età dell'indagine." },
+      { q:"Perché Marta pubblica solo le foto venute meglio?",
+        o:["Perché non vuole deludere i suoi amici","Perché ha poche foto","Perché i genitori glielo chiedono","Perché vuole vendere prodotti"],
+        a:0, why:"Lo dice con le sue parole: «non voglio deludere i miei amici»." },
+      { q:"Che cosa pensa Luca dei social?",
+        o:["Gli permettono di mostrare chi è davvero","Sono una perdita di tempo","Lo fanno sentire solo","Sono utili solo per lo studio"],
+        a:0, why:"«Tuttavia» e «invece» segnalano il cambio di opinione: per Luca i social mostrano chi è davvero." },
+      { q:"Che cosa consigliano gli esperti?",
+        o:["Vietare i social ai minorenni","Cercare un equilibrio tra social e amicizie reali","Usare i social solo di sera","Smettere di pubblicare foto"],
+        a:1, why:"«Un equilibrio: usare i social con attenzione, senza dimenticare gli amici in carne e ossa»." }
+    ]
   }
 ];
 
@@ -310,7 +350,8 @@ function ex(id){
   if (!S.exhibits[id]) S.exhibits[id] = { step:'leggi', analysis:{ tesi:'', prove:'', registro:'', lente:'' }, answers:[], qi:0, filed:false, filedAt:'', score:0, localText:'' };
   return S.exhibits[id];
 }
-function filedList(){ return EXHIBITS.filter(function(X){ return S.exhibits[X.id] && S.exhibits[X.id].filed; }); }
+function live(X){ return !X.draft; }   /* draft exhibits are reachable only by direct link #/prova/<id> (teacher preview) */
+function filedList(){ return EXHIBITS.filter(function(X){ return live(X) && S.exhibits[X.id] && S.exhibits[X.id].filed; }); }
 
 /* ============================================================
    HELPERS
@@ -460,7 +501,9 @@ function tabs(){
 function progressOf(X){
   const st = ex(X.id);
   if (st.filed) return 100;
-  if (st.step === 'leggi') return 0;
+  if (st.step === 'leggi' || st.step === 'insegna') return 0;
+  if (st.step === 'gist') return 15;
+  if (st.step === 'dettagli') return 35;
   if (st.step === 'vocab') return 15;
   if (st.step === 'analisi') return 35;
   if (st.step === 'domande') return 55 + Math.round((st.answers.filter(function(x){ return x != null; }).length / X.mc.length) * 35);
@@ -477,7 +520,7 @@ function ring(pct, color, trackColor, textColor){
    ============================================================ */
 function viewOggi(){
   const streak = streakNow(), filed = filedList().length, hasName = (S.student || '').trim();
-  const next = EXHIBITS.find(function(X){ return !ex(X.id).filed; });
+  const next = EXHIBITS.find(function(X){ return live(X) && !ex(X.id).filed; });
   const canHear = filed > 0;
 
   let hero;
@@ -488,7 +531,7 @@ function viewOggi(){
       h('div', { style:'display:flex;gap:18px;align-items:center;justify-content:space-between' },
         h('div', { class:'big' }, next.short),
         ring(pct, '#0D0D11', 'rgba(13,13,17,.18)', '#0D0D11')),
-      h('div', { class:'mute', style:'font-size:14px' }, '~' + next.minutes + ' minutes · read it, learn the words, break it down, answer six, file it.'),
+      h('div', { class:'mute', style:'font-size:14px' }, '~' + next.minutes + ' minutes · ' + (next.kind === 'ascolto' ? 'learn what to listen for, listen, take notes, answer, file it.' : 'read it, learn the words, break it down, answer six, file it.')),
       h('div', { class:'row', style:'margin-top:4px' },
         h('a', { class:'btn', style:'background:#0D0D11;color:#C8FF3D;border-bottom-color:#000', href:'#/prova/' + next.id }, st.step === 'leggi' ? 'Start →' : 'Keep going →')));
   } else {
@@ -506,7 +549,7 @@ function viewOggi(){
 
   const nodes = [];
   for (let i = 1; i <= 6; i++){
-    const X = EXHIBITS.find(function(e){ return e.caso === 1 && e.n === i; });
+    const X = EXHIBITS.find(function(e){ return live(e) && e.caso === 1 && e.n === i; });
     if (X){
       const d = ex(X.id).filed;
       nodes.push(h('a', { class:'node ' + (d ? 'done' : 'now'), href:'#/prova/' + X.id, 'aria-label':'Prova ' + i + (d ? ', filed' : ', open') }, d ? svg(CHECK) : String(i)));
@@ -1009,9 +1052,184 @@ function mailPanel(X, st){
     h('div', { class:'row' }, rec));
 }
 
+/* ============================================================
+   v2.6 LISTENING: teach what to listen for, gist listen, detail listens (replays allowed), notes, questions
+   Audio is never stored in the repo. The student plays a link or loads a file onto her own device.
+   ============================================================ */
+var AUDIO_URL = {};
+var PLAY_HOOK = null;
+const LISTEN_BASICS = [
+  { h:'Numbers',        t:'Percentages, ages and times carry the facts. Write the number and what it measures.' },
+  { h:'Contrast words', t:'ma, però, invece, tuttavia, anche se. What comes next is usually the opposing view.' },
+  { h:'Who speaks',     t:'A host plus other voices. Note who says what and whether they agree.' },
+  { h:'Tone',           t:'Worried, excited or neutral? How it is said shows the speaker\'s purpose and register.' }
+];
+const PREDICT = [
+  'From the title, what do you think the topic is? One sentence.',
+  'Write two Italian words or phrases you expect to hear.',
+  'Who do you think is speaking, and to whom?'
+];
+
+function audioPane(X, st){
+  const plays = h('span', { class:'mono', style:'color:#C8FF3D;font-size:12px' });
+  function paint(){
+    plays.textContent = 'Full listens: ' + (st.plays || 0) + ' · exam-style target: 2 · replays are allowed';
+    if (PLAY_HOOK) PLAY_HOOK();
+  }
+  let player;
+  if (AUDIO_URL[X.id]){
+    player = h('audio', { controls:true, src:AUDIO_URL[X.id], style:'width:100%' });
+    player.addEventListener('ended', function(){ st.plays = (st.plays || 0) + 1; save(); paint(); });
+  } else {
+    const fileIn = h('input', { type:'file', accept:'audio/*', style:'display:none', 'aria-label':'Load audio file' });
+    fileIn.addEventListener('change', function(){
+      const f = fileIn.files && fileIn.files[0];
+      if (!f) return;
+      AUDIO_URL[X.id] = URL.createObjectURL(f);
+      render();
+    });
+    player = h('div', { class:'stack', style:'gap:10px' },
+      h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Load the audio file your teacher gave you. It plays only on this device and is never uploaded. If you reopen the page, load it again.'),
+      h('div', { class:'row' }, h('button', { class:'btn sm', onclick:function(){ fileIn.click(); } }, 'Load the audio file'), fileIn),
+      X.url ? h('div', { class:'row' },
+        h('a', { class:'btn alt sm', href:X.url, target:'_blank', rel:'noopener' }, 'Or open the original ↗'),
+        h('button', { class:'btn alt sm', onclick:function(){ st.plays = (st.plays || 0) + 1; save(); paint(); } }, 'I listened once (count it)')) : null);
+  }
+  const pane = h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Ascolto · ' + X.type),
+    X.sample ? h('div', { class:'mono', style:'color:#FFC83D;font-size:11px' }, 'SAMPLE · invented script and numbers, for testing the flow') : null,
+    h('div', { class:'mute', style:'font-size:14px' }, X.intro),
+    h('h2', { style:'font-size:24px;line-height:1.15' }, X.title),
+    h('div', { class:'mute', style:'font-size:13px' }, X.author),
+    player, plays);
+  paint();
+  return pane;
+}
+
+function stepInsegna(X, st){
+  const btn = h('button', { class:'btn', disabled:true }, 'Ready to listen →');
+  function ready(){ return st.pred.every(function(p){ return (p || '').trim().length >= 8; }); }
+  function refresh(){ if (ready()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', ''); }
+  btn.addEventListener('click', function(){ if (!ready()) return; st.step = 'gist'; save(); render(); });
+  const cards = LISTEN_BASICS.map(function(g){
+    return h('div', { class:'rev', style:'flex-direction:column;gap:4px' }, h('span', { class:'mono', style:'color:#C8FF3D' }, g.h.toUpperCase()), h('span', {}, g.t));
+  });
+  const fields = PREDICT.map(function(q, i){
+    const id = 'pr-' + i;
+    const ta = h('textarea', { id:id, 'aria-describedby':id + '-h', style:'min-height:90px' });
+    ta.value = st.pred[i] || '';
+    ta.addEventListener('input', function(){ st.pred[i] = ta.value; save(); refresh(); });
+    return h('div', { class:'field' }, h('label', { for:id }, (i + 1) + '.'), h('p', { class:'hint', id:id + '-h' }, q), ta);
+  });
+  refresh();
+  return h('div', { class:'card' }, segs('leggi'),
+    h('div', { class:'mono mute' }, 'Step 1 of 5 · Insegna'),
+    h('h2', { style:'font-size:32px' }, 'Know what you are listening for.'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Nobody understands every word. Good listeners catch four things. Read them, then predict before you press play.'),
+    cards,
+    h('h2', { style:'font-size:24px;margin-top:6px' }, 'Predict first'),
+    fields, h('div', { class:'row' }, btn));
+}
+
+function stepGist(X, st){
+  const btn = h('button', { class:'btn', disabled:true }, 'On to the details →');
+  const cnt = h('div', { class:'cnt' });
+  const ta = h('textarea', { id:'gist', 'aria-label':'Main idea in one sentence', style:'min-height:110px' });
+  ta.value = st.gist || '';
+  function ready(){ return (st.plays || 0) >= 1 && (st.gist || '').trim().length >= 20; }
+  function refresh(){
+    cnt.textContent = ((st.plays || 0) >= 1 ? 'Listen counted. ' : 'Play it all the way through once to unlock this. ') + (st.gist || '').trim().length + ' characters · min 20';
+    if (ready()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', '');
+  }
+  PLAY_HOOK = refresh;
+  ta.addEventListener('input', function(){ st.gist = ta.value; save(); refresh(); });
+  btn.addEventListener('click', function(){ if (!ready()) return; st.step = 'dettagli'; save(); render(); });
+  refresh();
+  return h('div', { class:'card' }, segs('vocab'),
+    h('div', { class:'mono mute' }, 'Step 2 of 5 · Il senso generale'),
+    h('h2', { style:'font-size:32px' }, 'First listen: the big picture.'),
+    h('p', { style:'margin:0' }, 'Press play and listen all the way through. Do not write while it plays and do not chase single words. Afterwards, write the main idea in one sentence, in Italian.'),
+    h('div', { class:'field' }, h('label', { for:'gist' }, 'In una frase'), ta, cnt),
+    h('div', { class:'row' }, btn));
+}
+
+function stepDettagli(X, st){
+  const btn = h('button', { class:'btn', disabled:true }, 'On to the questions →');
+  function ready(){ return X.detail.every(function(f){ return (st.det[f.k] || '').trim().length >= 8; }); }
+  function refresh(){ if (ready()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', ''); }
+  btn.addEventListener('click', function(){ if (!ready()) return; st.step = 'domande'; st.qi = st.answers.length >= X.mc.length ? 0 : st.answers.length; save(); render(); });
+  const fields = X.detail.map(function(f){
+    const id = 'd-' + f.k;
+    const ta = h('textarea', { id:id, 'aria-describedby':id + '-h', style:'min-height:90px' });
+    ta.value = st.det[f.k] || '';
+    ta.addEventListener('input', function(){ st.det[f.k] = ta.value; save(); refresh(); });
+    return h('div', { class:'field' }, h('label', { for:id }, f.label), h('p', { class:'hint', id:id + '-h' }, f.hint), ta);
+  });
+  const notes = h('textarea', { id:'notes', 'aria-label':'Free notes', style:'min-height:130px', placeholder:'Free notes. Words, numbers, names…' });
+  notes.value = st.notes || '';
+  notes.addEventListener('input', function(){ st.notes = notes.value; save(); });
+  const stamp = h('button', { class:'btn alt sm', onclick:function(){
+    const a = document.querySelector('audio');
+    if (!a) return;
+    const s = Math.floor(a.currentTime || 0);
+    const tag = '[' + Math.floor(s / 60) + ':' + pad(s % 60) + '] ';
+    notes.value = notes.value + (notes.value && !/\n$/.test(notes.value) ? '\n' : '') + tag;
+    st.notes = notes.value; save(); notes.focus();
+  } }, 'Stamp the time');
+  refresh();
+  return h('div', { class:'card' }, segs('analisi'),
+    h('div', { class:'mono mute' }, 'Step 3 of 5 · I dettagli'),
+    h('h2', { style:'font-size:32px' }, 'Listen again, with a purpose.'),
+    h('p', { style:'margin:0' }, 'Replay as many times as you need, whole or in pieces. Each time, listen for ONE thing. Fill in each box with what you catch.'),
+    fields,
+    h('div', { class:'field' }, h('label', { for:'notes' }, 'Appunti liberi'),
+      h('p', { class:'hint' }, 'Optional. Use Stamp the time to mark where you heard something (needs the audio file loaded on this page).'),
+      notes, h('div', { class:'row', style:'margin-top:8px' }, stamp)),
+    h('div', { class:'row' }, btn));
+}
+
+function filedAscolto(X, st){
+  const pairs = [{ label:'Il senso generale', mine:st.gist, model:X.model.gist }].concat(X.detail.map(function(f){ return { label:f.label, mine:st.det[f.k], model:X.model[f.k] }; }));
+  const cmp = pairs.map(function(p){
+    return h('div', {}, h('div', { class:'mono mute', style:'margin-bottom:6px' }, p.label),
+      h('div', { class:'cmp' },
+        h('div', {}, h('div', { class:'mono mute', style:'margin-bottom:4px;font-size:10px' }, 'Yours'), p.mine),
+        h('div', { class:'m2' }, h('div', { class:'mono', style:'margin-bottom:4px;font-size:10px;color:#FFC83D' }, 'Model'), p.model)));
+  });
+  return h('div', { class:'card' },
+    h('div', { style:'display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap' },
+      h('span', { class:'mono mute' }, 'Prova n. ' + pad(X.n) + ' · ' + X.type), h('span', { class:'stamp' }, 'DEPOSITATA ' + fmtDate(st.filedAt))),
+    h('div', { class:'big' }, 'Filed. ' + st.score + ' / ' + X.mc.length + ' on the questions.'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Full listens: ' + (st.plays || 0) + '. Compare your notes with the model. They do not have to match, but they should catch the same facts.'),
+    cmp,
+    X.transcript ? h('details', {}, h('summary', { class:'mono mute', style:'cursor:pointer' }, 'Check against the script'), h('p', { style:'font-size:15px;line-height:1.6' }, X.transcript)) : null,
+    h('div', { class:'row' }, h('a', { class:'btn', href:'#/udienza' }, 'Run the hearing'), h('a', { class:'btn alt', href:'#/' }, 'Back to today')));
+}
+
+function viewAscolto(X){
+  const st = ex(X.id);
+  st.pred = st.pred || ['', '', ''];
+  st.gist = st.gist || '';
+  st.det = st.det || {};
+  st.notes = st.notes || '';
+  PLAY_HOOK = null;
+  const pane = audioPane(X, st);
+  let right;
+  if (st.filed) right = filedAscolto(X, st);
+  else if (st.step === 'leggi' || st.step === 'insegna') right = stepInsegna(X, st);
+  else if (st.step === 'gist') right = stepGist(X, st);
+  else if (st.step === 'dettagli') right = stepDettagli(X, st);
+  else if (st.step === 'domande') right = stepQuestions(X, st);
+  else right = stepResult(X, st);
+  return h('main', {},
+    h('div', { style:'margin:10px 0 16px' }, h('a', { href:'#/', class:'mono', style:'text-decoration:none' }, '← Today')),
+    h('div', { class:'prova' }, h('div', { class:'l' }, pane), h('div', { class:'r' }, right)));
+}
+
 function viewProva(id){
   const X = EXHIBITS.find(function(e){ return e.id === id; });
   if (!X) return h('main', {}, h('p', {}, 'Prova not found. '), h('a', { href:'#/' }, 'Back'));
+  if (X.kind === 'ascolto') return viewAscolto(X);
   const st = ex(id);
   let right;
   if (st.filed) right = filedPanel(X, st);
@@ -1033,7 +1251,7 @@ function buildDeck(){
   const qs = [], cs = [];
   filedList().forEach(function(X){
     X.mc.forEach(function(q){ qs.push(q); });
-    X.vocab.forEach(function(c){ cs.push(c); });
+    (X.vocab || []).forEach(function(c){ cs.push(c); });
   });
   const picked = shuffle(qs).slice(0, 5).map(function(q){
     const o = shuffle(q.o.map(function(t, i){ return { t:t, i:i }; }));
