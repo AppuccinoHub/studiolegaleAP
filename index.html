@@ -206,6 +206,14 @@ const EXHIBITS = [
         'In che modo la scuola potrebbe aiutare i ragazzi a sentirsi meno soli online?'
       ],
       close:["Mi risponda entro venerdì, per favore. La ringrazio fin d'ora per la collaborazione.", 'Cordiali saluti,', 'Elena Marchetti'],
+      phrases:[
+        { h:'Greeting',            l:['Gentile Dottoressa Marchetti,', 'Egregia Dottoressa,'] },
+        { h:'Opening',             l:['La ringrazio per la Sua email.', 'Le scrivo in risposta alla Sua richiesta.'] },
+        { h:'Answering',           l:['Per quanto riguarda la prima domanda, …', 'A mio parere, …', 'In primo luogo, …', 'Inoltre, …'] },
+        { h:'Reasons + examples',  l:['Il motivo è che …', 'Per esempio, …', 'Infatti, …'] },
+        { h:'Asking back',         l:['Vorrei sapere se …', "Potrebbe dirmi a che ora si terrà l'incontro?", 'Sarebbe possibile avere maggiori informazioni su …?'] },
+        { h:'Closing',             l:['Spero di aver risposto alle Sue domande.', 'Resto a disposizione per qualsiasi chiarimento.', 'In attesa di una Sua risposta,', 'Cordiali saluti,'] }
+      ],
       task:'Reply to Dott.ssa Marchetti. Greet her formally, answer both questions with reasons and examples, ask her for one detail about the meeting, and close politely. Use Lei.'
     },
     analysis:[
@@ -892,6 +900,17 @@ function mailPrompt(E){
     E.close.map(function(p){ return h('p', { style:'margin:6px 0;font-size:16px;line-height:1.6;color:#0D0D11' }, p); }),
     h('div', { style:'margin-top:8px;padding-top:10px;border-top:1px solid #d9d6cd;font-size:13px;color:#55535f' }, h('strong', {}, 'YOUR TASK. '), E.task));
 }
+/* training wheels: the phrase box shows for the first E.wheels emails (default 2), then disappears like the real exam */
+function mailsFiled(){ return Object.keys(S.exhibits).filter(function(k){ return S.exhibits[k] && S.exhibits[k].mail && S.exhibits[k].mail.filed; }).length; }
+function phrasePanel(E){
+  if (!E.phrases) return null;
+  return h('details', { class:'hlpanel', open:true },
+    h('summary', { class:'mono mute', style:'cursor:pointer' }, 'Frasi utili · formal email phrases'),
+    E.phrases.map(function(g){
+      return h('div', { style:'margin-top:10px' }, h('div', { class:'mono', style:'color:#C8FF3D;font-size:11px' }, g.h.toUpperCase()),
+        g.l.map(function(t){ return h('div', { style:'font-size:15px;line-height:1.5' }, t); }));
+    }));
+}
 function mailPanel(X, st){
   if (!X.email) return null;
   const M = mailOf(st), E = X.email;
@@ -925,7 +944,7 @@ function mailPanel(X, st){
     btn.addEventListener('click', function(){ if (wordCount(ta.value) < 30) return; M.text = ta.value; M.filed = true; M.filedAt = new Date().toISOString(); save(); render(); knock(); });
     return h('div', { class:'stack', style:'gap:12px' }, head,
       h('div', { style:'display:flex;justify-content:space-between;align-items:center' }, h('h2', { style:'font-size:28px' }, 'Write your reply.'), tm),
-      mailPrompt(E), ta, cnt, h('div', { class:'row' }, btn));
+      mailPrompt(E), (mailsFiled() < (E.wheels || 2) ? phrasePanel(E) : null), ta, cnt, h('div', { class:'row' }, btn));
   }
   /* filed: copy to Google Classroom, then enter the teacher's rubric result */
   const copyNote = h('span', { class:'mono mute', style:'font-size:12px' }, 'Paste it into your Google Classroom assignment.');
