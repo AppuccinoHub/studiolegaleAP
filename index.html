@@ -125,6 +125,8 @@ textarea:focus{border-color:var(--acid);outline:0}
 .card.acid .stamp,.card.paper .stamp{color:var(--hot-d);border-color:var(--hot-d)}
 .bigscore{font-family:var(--display);font-weight:800;font-size:72px;line-height:1;letter-spacing:-.04em}
 .rev{display:flex;gap:12px;padding:12px 0;border-top:2px solid var(--line);font-size:14px}
+.crit{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-top:2px solid var(--line);font-size:14px}
+.crit .cb{display:flex;gap:8px}
 .rev .m{font-family:var(--mono);font-weight:700;width:22px;flex-shrink:0}
 .cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cmp>div{border-radius:14px;padding:12px;font-size:14px;line-height:1.5;background:var(--surf2)}
@@ -174,7 +176,8 @@ const CASES = [
 ];
 
 const DESCRIPTORS = [
-  { task:'La corrispondenza', meta:'Email · 15 min', items:['Formal register, consistent','Answers both questions','Asks for a detail back','Opening + closing conventions','Accuracy: forms + connectors'] },
+  /* La corrispondenza = the 7 criteria rows of the College Board Task 1 Email Reply rubric (checked against the 2026 scoring guidelines) */
+  { task:'La corrispondenza', meta:'Email reply · 15 min', items:['Maintains the exchange','Gives the required information','Comprehensible to the reader','Vocabulary + idiomatic language','Grammar, syntax, usage','Register + formal email conventions','Sentence structure and variety'] },
   { task:"L'arringa", meta:'Essay · 55 min', items:['Clear thesis','Cites all 3 exhibits','Counter-argument addressed','Organized paragraphs','Rich, precise vocabulary','Accuracy: complex structures'] },
   { task:"L'interrogatorio", meta:'Conversation · 5 × 20 s', items:['Full 20 s, every turn','Answers what was asked','Elaborates, not one-liners','Register matches the speaker','Pronunciation does not block'] },
   { task:'Il parere', meta:'Cultural comparison · 2 min', items:['Both communities compared','Concrete Italian evidence','Clear structure, intro → close','Fills 2 min, no dead air','Accuracy under time'] }
@@ -189,6 +192,22 @@ const EXHIBITS = [
     intro:"Il seguente articolo di Francesco Pira, professore di Sociologia all'Università di Messina, pubblicato sul Quotidiano di Sicilia (QdS) il 16 ottobre 2026, commenta i risultati della Survey Teen 2026 su adolescenti e social network (Ipsos Doxa per Fondazione Libellula).",
     url:'https://qds.it/adolescenti-social-paradosso-generazione-riconoscono-rischi-ma-hanno-paura-di-dire-no/',
     minutes:45,
+    email:{
+      from:'Elena Marchetti · coordinatrice, programma di scambio «Ponte Italia»',
+      subject:'Giovani e social: la sua opinione per il nostro incontro',
+      body:[
+        'Gentile studentessa,',
+        "Le scrivo a nome del programma di scambio «Ponte Italia», che collega la sua scuola a un liceo di Messina. Il mese prossimo organizziamo un incontro online tra studenti italiani e americani sul tema «Giovani e social network».",
+        "Una recente ricerca italiana mostra che molti adolescenti riconoscono i rischi dei social, ma hanno difficoltà a dire di no quando il gruppo la pensa diversamente. Vorremmo sapere come vivono questa situazione i ragazzi americani.",
+        'Le chiedo quindi due cose:'
+      ],
+      asks:[
+        'Quali problemi osserva tra i suoi coetanei quando usano i social e perché, secondo lei, è difficile prendere posizione davanti agli amici?',
+        'In che modo la scuola potrebbe aiutare i ragazzi a sentirsi meno soli online?'
+      ],
+      close:["Mi risponda entro venerdì, per favore. La ringrazio fin d'ora per la collaborazione.", 'Cordiali saluti,', 'Elena Marchetti'],
+      task:'Reply to Dott.ssa Marchetti. Greet her formally, answer both questions with reasons and examples, ask her for one detail about the meeting, and close politely. Use Lei.'
+    },
     analysis:[
       { k:'tesi',     label:'Tesi',            hint:"Cosa sostiene l'autore? Una frase, con parole tue." },
       { k:'prove',    label:'Prove',           hint:"Quali dati o esempi usa per sostenerla? Cita almeno due numeri." },
@@ -493,8 +512,8 @@ function viewOggi(){
 
   const skillsHint = h('div', { class:'card' },
     h('div', { class:'mono mute' }, 'Your skills'),
-    h('div', { style:'font-size:15px' }, 'Reading has no writing or speaking rubric line. The 21 skills start filling as soon as the email, essay and speaking tasks arrive.'),
-    h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn ghost sm', href:'#/skills' }, 'See all 21')));
+    h('div', { style:'font-size:15px' }, 'Reading has no writing or speaking rubric line. The skills fill once you write the email and enter your teacher\'s grade.'),
+    h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn ghost sm', href:'#/skills' }, 'See all ' + totalSkills())));
 
   return h('main', {},
     h('div', { class:'hello' },
@@ -510,6 +529,7 @@ function viewOggi(){
 /* ============================================================
    VIEW: SKILLS
    ============================================================ */
+function totalSkills(){ return DESCRIPTORS.reduce(function(n, g){ return n + g.items.length; }, 0); }
 function viewSkills(){
   let cleared = 0;
   const groups = DESCRIPTORS.map(function(g, gi){
@@ -525,8 +545,8 @@ function viewSkills(){
         })));
   });
   return h('main', {},
-    h('div', { class:'hello' }, h('h1', {}, 'Skills'), h('div', { class:'streak' }, cleared, h('span', { class:'mono mute', style:'font-size:10px' }, '/ 21 CLEARED'))),
-    h('p', { class:'mute', style:'margin:0 0 20px;max-width:640px' }, 'Each tile is one line of the College Board rubric. It clears after you hit it in three tasks in a row. No percent score anywhere. This build trains Lettura; these fill once the writing and speaking tasks arrive.'),
+    h('div', { class:'hello' }, h('h1', {}, 'Skills'), h('div', { class:'streak' }, cleared, h('span', { class:'mono mute', style:'font-size:10px' }, '/ ' + totalSkills() + ' CLEARED'))),
+    h('p', { class:'mute', style:'margin:0 0 20px;max-width:640px' }, 'Each tile is one line of the College Board rubric. It clears after you hit it in three tasks in a row. No percent score anywhere. Corrispondenza fills when you enter your teacher\'s email grade. The essay and speaking tasks are not built yet.'),
     h('div', { class:'stack', style:'gap:28px' }, groups));
 }
 
@@ -844,7 +864,130 @@ function filedPanel(X, st){
     h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'It\'s in your archive and the hearing can use it. Compare your breakdown with the model: they don\'t need to match, but they should hit the same four points.'),
     mine,
     vocabReview(X, st),
+    mailPanel(X, st),
     h('div', { class:'row' }, h('a', { class:'btn', href:'#/udienza' }, 'Run the hearing'), h('a', { class:'btn alt', href:'#/' }, 'Back to today')));
+}
+
+/* ---- v2.4 La corrispondenza: write the email, copy it to Google Classroom, enter the teacher's rubric result ---- */
+function mailOf(st){ if (!st.mail) st.mail = { text:'', started:'', filed:false, filedAt:'', graded:null, score:null, gradedAt:'' }; return st.mail; }
+function wordCount(t){ const m = (t || '').trim().match(/\S+/g); return m ? m.length : 0; }
+function copyText(t, done){
+  function fallback(){
+    const ta = h('textarea', { style:'position:fixed;left:-999px;top:0' });
+    ta.value = t; document.body.append(ta); ta.select();
+    try { if (document.execCommand('copy')) done(true); else done(false); } catch (e) { done(false); }
+    ta.remove();
+  }
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){ done(true); }, fallback); return; }
+  } catch (e) {}
+  fallback();
+}
+function mailPrompt(E){
+  return h('div', { class:'card paper', style:'gap:8px' },
+    h('div', { class:'mono', style:'color:#55535f' }, 'DA: ' + E.from),
+    h('div', { class:'mono', style:'color:#55535f' }, 'OGGETTO: ' + E.subject),
+    E.body.map(function(p){ return h('p', { style:'margin:6px 0;font-size:16px;line-height:1.6;color:#0D0D11' }, p); }),
+    h('ol', { style:'margin:6px 0;padding-left:22px;color:#0D0D11;font-size:16px;line-height:1.6' }, E.asks.map(function(a){ return h('li', {}, a); })),
+    E.close.map(function(p){ return h('p', { style:'margin:6px 0;font-size:16px;line-height:1.6;color:#0D0D11' }, p); }),
+    h('div', { style:'margin-top:8px;padding-top:10px;border-top:1px solid #d9d6cd;font-size:13px;color:#55535f' }, h('strong', {}, 'YOUR TASK. '), E.task));
+}
+function mailPanel(X, st){
+  if (!X.email) return null;
+  const M = mailOf(st), E = X.email;
+  const head = h('div', { class:'mono mute' }, 'La corrispondenza · Email reply · 15 min');
+  if (!M.started){
+    return h('div', { class:'stack', style:'gap:12px' }, head,
+      h('h2', { style:'font-size:28px' }, 'Next: answer a real email.'),
+      h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Fifteen minutes, like the exam. No dictionary, no translator. Use the article for evidence. The timer starts when you tap Begin, and it does not lock you out.'),
+      h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ M.started = new Date().toISOString(); save(); render(); } }, 'Begin the 15 minutes')));
+  }
+  if (!M.filed){
+    const tm = h('span', { class:'mono', style:'font-size:20px;color:#C8FF3D' });
+    function fmt(){
+      const left = 900 - Math.floor((Date.now() - new Date(M.started).getTime()) / 1000);
+      if (left <= 0){ tm.style.color = '#FF4A2E'; return "TIME'S UP · finish your sentence"; }
+      return pad(Math.floor(left / 60)) + ':' + pad(left % 60);
+    }
+    tm.textContent = fmt();
+    const iv = setInterval(function(){ if (!document.body.contains(tm)){ clearInterval(iv); return; } tm.textContent = fmt(); }, 1000);
+    const cnt = h('div', { class:'cnt' });
+    const ta = h('textarea', { 'aria-label':'Your email reply, in Italian', placeholder:'Gentile Dottoressa Marchetti,\n\n…', style:'min-height:300px' });
+    ta.value = M.text || '';
+    const btn = h('button', { class:'btn', disabled:true }, 'File the email');
+    function upd(){
+      const w = wordCount(ta.value);
+      cnt.textContent = w + ' words · at least 30 to file';
+      if (w >= 30) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', '');
+    }
+    ta.addEventListener('input', function(){ M.text = ta.value; save(); upd(); });
+    upd();
+    btn.addEventListener('click', function(){ if (wordCount(ta.value) < 30) return; M.text = ta.value; M.filed = true; M.filedAt = new Date().toISOString(); save(); render(); knock(); });
+    return h('div', { class:'stack', style:'gap:12px' }, head,
+      h('div', { style:'display:flex;justify-content:space-between;align-items:center' }, h('h2', { style:'font-size:28px' }, 'Write your reply.'), tm),
+      mailPrompt(E), ta, cnt, h('div', { class:'row' }, btn));
+  }
+  /* filed: copy to Google Classroom, then enter the teacher's rubric result */
+  const copyNote = h('span', { class:'mono mute', style:'font-size:12px' }, 'Paste it into your Google Classroom assignment.');
+  const copyBtn = h('button', { class:'btn sm', onclick:function(){
+    copyText(M.text, function(ok){ copyNote.textContent = ok ? 'Copied. Now paste it into Google Classroom.' : 'Copy blocked. Press and hold the text above, choose Select all, then Copy.'; });
+  } }, 'Copy my email');
+  const mine = h('div', { class:'rev', style:'flex-direction:column;gap:6px' }, h('span', { class:'mono mute' }, 'Your email · ' + wordCount(M.text) + ' words'), h('span', { style:'white-space:pre-wrap' }, M.text));
+  const items = DESCRIPTORS[0].items;
+  if (M.graded){
+    return h('div', { class:'stack', style:'gap:12px' }, head,
+      h('h2', { style:'font-size:28px' }, 'Email graded: ' + M.score + ' / 5'),
+      mine,
+      h('div', { class:'mono mute' }, 'Rubric rows from your teacher'),
+      items.map(function(t, i){ return h('div', { class:'rev' }, h('span', { class:'m', style:'color:' + (M.graded[i] ? '#3DDC84' : '#FF4A2E') }, M.graded[i] ? '✓' : '✗'), h('span', {}, t)); }),
+      h('div', { class:'row' }, h('a', { class:'btn alt', href:'#/skills' }, 'See my skills')));
+  }
+  const sel = new Array(items.length).fill(null);
+  let overall = null;
+  const rec = h('button', { class:'btn', disabled:true }, 'Record my teacher\'s result');
+  function chk(){ if (overall !== null && sel.every(function(v){ return v !== null; })) rec.removeAttribute('disabled'); else rec.setAttribute('disabled', ''); }
+  const rows = items.map(function(t, i){
+    const yes = h('button', { class:'chip', 'aria-pressed':'false' }, 'SOLID');
+    const no = h('button', { class:'chip', 'aria-pressed':'false' }, 'NEEDS WORK');
+    function paint(){
+      yes.classList.toggle('on', sel[i] === true); no.classList.toggle('on', sel[i] === false);
+      yes.setAttribute('aria-pressed', String(sel[i] === true)); no.setAttribute('aria-pressed', String(sel[i] === false));
+    }
+    yes.addEventListener('click', function(){ sel[i] = true; paint(); chk(); });
+    no.addEventListener('click', function(){ sel[i] = false; paint(); chk(); });
+    return h('div', { class:'crit' }, h('span', {}, t), h('span', { class:'cb' }, yes, no));
+  });
+  const scoreBtns = [0, 1, 2, 3, 4, 5].map(function(n){
+    const b = h('button', { class:'chip', 'aria-pressed':'false' }, String(n));
+    b.addEventListener('click', function(){
+      overall = n;
+      scoreBtns.forEach(function(x, k){ x.classList.toggle('on', k === n); x.setAttribute('aria-pressed', String(k === n)); });
+      chk();
+    });
+    return b;
+  });
+  rec.addEventListener('click', function(){
+    if (rec.hasAttribute('disabled')) return;
+    S.descriptors = S.descriptors || {};
+    let cleared = false;
+    items.forEach(function(t, i){
+      const key = '0-' + i, n = S.descriptors[key] || 0;
+      S.descriptors[key] = sel[i] ? n + 1 : 0;
+      if (sel[i] && n + 1 === 3) cleared = true;
+    });
+    M.graded = sel.slice(); M.score = overall; M.gradedAt = new Date().toISOString();
+    save(); render(); knock(); if (cleared) burst();
+  });
+  return h('div', { class:'stack', style:'gap:12px' }, head,
+    h('h2', { style:'font-size:28px' }, 'Email filed.'),
+    mine,
+    h('div', { class:'row' }, copyBtn, copyNote),
+    h('h2', { style:'font-size:22px;margin-top:8px' }, 'When your teacher grades it'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Your teacher marks the College Board email rubric in Google Classroom. Enter what she gave you. Mark a row SOLID only if she placed it at 4 or 5. A row clears after three SOLID emails in a row, and any NEEDS WORK resets it. This only works if you enter it honestly.'),
+    rows,
+    h('div', { class:'mono mute', style:'margin-top:6px' }, 'Her overall score (0–5)'),
+    h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, scoreBtns),
+    h('div', { class:'row' }, rec));
 }
 
 function viewProva(id){
