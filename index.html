@@ -95,6 +95,12 @@ main{order:2;width:100%;max-width:1060px;margin:0 auto;padding:8px 20px 40px}
 .prova>.l{flex:1 1 440px;min-width:0}.prova>.r{flex:1 1 440px;min-width:0}
 .reading .intro{font-size:14px;color:#55535f;line-height:1.55;font-style:italic}
 .reading .body p{font:400 17px/1.75 var(--sans);margin:0 0 14px}
+.reading mark{background:#C8FF3D;color:#0D0D11;border-radius:3px;padding:1px 2px;cursor:pointer;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.reading .hlbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 16px;padding:10px 12px;background:#efece3;border-radius:10px;position:sticky;top:0;z-index:2}
+.reading .hlbar .mute{color:#55535f}
+.hlpanel{border:1px dashed var(--line,#3a3a44);border-radius:12px;padding:12px 14px;margin:0 0 14px}
+.hlpanel mark{background:#C8FF3D;color:#0D0D11;border-radius:3px;padding:1px 3px}
+.hlpanel li{margin:0 0 8px;font-size:14px;line-height:1.5}
 .reading a.btn{align-self:flex-start}
 .segs{display:flex;gap:6px;margin-bottom:6px}
 .segs i{flex:1;height:8px;border-radius:4px;background:var(--surf2)}
@@ -562,17 +568,115 @@ function segs(cur){
   return h('div', { class:'segs', role:'img', 'aria-label':'Step ' + (idx + 1) + ' of 5' },order.map(function(_, i){ return h('i', { class: i <= idx ? 'on' : '' }); }));
 }
 
+/* ---- v2.3 highlighter: ranges are {p, s, e} = paragraph index + character offsets ---- */
+var lastSel = null;
+function parasOf(st){ return (st.localText || '').split(/\n+/).map(function(s){ return s.trim(); }).filter(Boolean); }
+function mergedHl(st, p){
+  const r = (st.hl || []).filter(function(x){ return x.p === p; }).map(function(x){ return [x.s, x.e]; }).sort(function(a, b){ return a[0] - b[0]; });
+  const out = [];
+  r.forEach(function(x){
+    const last = out[out.length - 1];
+    if (last && x[0] <= last[1]) last[1] = Math.max(last[1], x[1]); else out.push([x[0], x[1]]);
+  });
+  return out;
+}
+function setHl(st, p, ranges){
+  st.hl = (st.hl || []).filter(function(x){ return x.p !== p; }).concat(ranges.map(function(x){ return { p:p, s:x[0], e:x[1] }; }));
+}
+function readSelection(){
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return null;
+  const rg = sel.getRangeAt(0);
+  const els = document.querySelectorAll('.reading .body p[data-p]');
+  const out = [];
+  els.forEach(function(el){
+    const pr = document.createRange();
+    pr.selectNodeContents(el);
+    const a = pr.comparePoint(rg.startContainer, rg.startOffset);
+    const b = pr.comparePoint(rg.endContainer, rg.endOffset);
+    if (a > 0 || b < 0) return;
+    const len = el.textContent.length;
+    let s = 0, e = len, t;
+    if (a >= 0){ t = document.createRange(); t.setStart(el, 0); t.setEnd(rg.startContainer, rg.startOffset); s = t.toString().length; }
+    if (b <= 0){ t = document.createRange(); t.setStart(el, 0); t.setEnd(rg.endContainer, rg.endOffset); e = t.toString().length; }
+    if (e - s > 0) out.push({ p:Number(el.getAttribute('data-p')), s:s, e:e });
+  });
+  return out.length ? out : null;
+}
+if (!window.__hlBound){
+  window.__hlBound = true;
+  document.addEventListener('selectionchange', function(){
+    const found = readSelection();
+    if (!found) return;               /* keep the last good selection: tapping the button can clear it on phones */
+    lastSel = found;
+    const note = document.getElementById('hl-status');
+    if (note) note.textContent = 'Selection ready. Tap "Highlight selection".';
+  });
+}
+function hlParagraph(st, text, i){
+  const marks = mergedHl(st, i);
+  const kids = [];
+  let pos = 0;
+  marks.forEach(function(m){
+    if (m[0] > pos) kids.push(text.slice(pos, m[0]));
+    kids.push(h('mark', { title:'Tap to remove', onclick:function(){ setHl(st, i, marks.filter(function(x){ return x !== m; })); save(); render(); } }, text.slice(m[0], m[1])));
+    pos = m[1];
+  });
+  if (pos < text.length) kids.push(text.slice(pos));
+  return h('p', { 'data-p':String(i) }, kids);
+}
+function hlSnippets(st){
+  const paras = parasOf(st), out = [];
+  for (let i = 0; i < paras.length; i++){
+    mergedHl(st, i).forEach(function(m){ out.push(paras[i].slice(m[0], m[1])); });
+  }
+  return out;
+}
+
 function readingPane(X, st){
-  const paras = (st.localText || '').split(/\n+/).map(function(s){ return s.trim(); }).filter(Boolean);
+  lastSel = null;
+  if (!st.hl) st.hl = [];
+  const paras = parasOf(st);
   const ta = h('textarea', { 'aria-label':"Incolla qui il testo dell'articolo", placeholder:"Incolla qui il testo dell'articolo…", style:'min-height:220px' });
   ta.value = st.localText || '';
+  const fileIn = h('input', { type:'file', accept:'.txt,text/plain', style:'display:none', 'aria-label':'Load article text file' });
+  fileIn.addEventListener('change', function(){
+    const f = fileIn.files && fileIn.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = function(){ st.localText = String(rd.result || ''); st.hl = []; save(); render(); };
+    rd.readAsText(f);
+  });
   const body = paras.length
-    ? h('div', { class:'body' }, paras.map(function(p){ return h('p', {}, p); }),
-        h('button', { class:'btn alt sm', onclick:function(){ st.localText = ''; save(); render(); } }, 'Clear pasted text'))
+    ? h('div', { class:'body' },
+        h('div', { class:'hlbar' },
+          h('button', { class:'btn sm', onclick:function(){
+            const s = lastSel;
+            const note = document.getElementById('hl-status');
+            if (!s){ if (note) note.textContent = 'Select some words in the text first, then tap this.'; return; }
+            const byP = {};
+            s.forEach(function(x){ (byP[x.p] = byP[x.p] || []).push([x.s, x.e]); });
+            Object.keys(byP).forEach(function(k){
+              const p = Number(k);
+              setHl(st, p, mergedHl(st, p).concat(byP[k]).sort(function(a, b){ return a[0] - b[0]; }));
+              const m = mergedHl(st, p); setHl(st, p, m);
+            });
+            lastSel = null;
+            try { window.getSelection().removeAllRanges(); } catch (e) {}
+            save(); render();
+          } }, 'Highlight selection'),
+          h('span', { id:'hl-status', class:'mute', style:'font-size:13px' }, 'Select the key sentences, then tap the button. Tap a highlight to remove it.')),
+        paras.map(function(p, i){ return hlParagraph(st, p, i); }),
+        h('div', { class:'row' },
+          h('button', { class:'btn alt sm', onclick:function(){ st.localText = ''; st.hl = []; save(); render(); } }, 'Clear pasted text'),
+          (st.hl.length ? h('button', { class:'btn alt sm', onclick:function(){ st.hl = []; save(); render(); } }, 'Remove all highlights') : null)))
     : h('div', {},
-        h('p', { style:'font-size:14px;color:#55535f;margin:0 0 10px' }, "If the link is blocked at school, your teacher gives you the text: copy it, paste it in the box below, then tap Show. It saves only on this device. (This tool doesn't hold the article itself because it's copyrighted.)"),
+        h('p', { style:'font-size:14px;color:#55535f;margin:0 0 10px' }, "If the link is blocked at school, your teacher gives you the text: paste it in the box below, or load the .txt file she shares, then tap Show. It saves only on this device. (This tool doesn't hold the article itself because it's copyrighted.)"),
         ta,
-        h('div', { class:'row' }, h('button', { class:'btn alt sm', style:'background:#0D0D11;color:#fff', onclick:function(){ st.localText = ta.value; save(); render(); } }, 'Show the text here')));
+        h('div', { class:'row' },
+          h('button', { class:'btn alt sm', style:'background:#0D0D11;color:#fff', onclick:function(){ st.localText = ta.value; st.hl = []; save(); render(); } }, 'Show the text here'),
+          h('button', { class:'btn alt sm', onclick:function(){ fileIn.click(); } }, 'Load a .txt file'),
+          fileIn));
   return h('div', { class:'card paper reading' },
     h('div', { class:'mono', style:'color:#55535f' }, 'Fonte n. 1 · ' + X.type),
     h('div', { class:'intro' }, X.intro),
@@ -677,7 +781,15 @@ function stepAnalysis(X, st){
     h('div', { class:'mono mute' }, 'Step 3 of 5 · Analisi'),
     h('h2', { style:'font-size:32px' }, 'Break it down in four lines.'),
     h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Write in Italian. After you file, you\'ll see the Prof\'s model next to yours.'),
-    fields, h('div', { class:'row' }, btn));
+    hlPanel(st), fields, h('div', { class:'row' }, btn));
+}
+
+function hlPanel(st){
+  const sn = hlSnippets(st);
+  if (!sn.length) return h('div', { class:'hlpanel mute', style:'font-size:13px' }, 'Your highlights from the article will show here. Go back to Read and mark the key lines: they are your evidence for the thesis and proofs.');
+  return h('div', { class:'hlpanel' },
+    h('div', { class:'mono mute' }, 'Your highlights · use them as evidence'),
+    h('ul', { style:'margin:8px 0 0;padding-left:18px' }, sn.map(function(t){ return h('li', {}, h('mark', {}, t)); })));
 }
 
 function stepQuestions(X, st){
