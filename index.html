@@ -349,6 +349,62 @@ const EXHIBITS = [
     ]
   },
   {
+    /* SAMPLE (Audio Report): original script and invented details for training. setOnly: used in timed listening sets; read aloud by the device voice or replaced by a real recording. */
+    id:'a02', kind:'ascolto', draft:true, setOnly:true, sample:true, caso:1, n:3, type:'ASCOLTO', src:'Audio Report',
+    title:"Biblioteca aperta di sera (SAMPLE)", short:"Un notiziario locale.", author:'Script originale della Prof, per esercizio',
+    intro:"Un breve notiziario radiofonico di una città italiana. I fatti sono inventati.", url:'', minutes:10,
+    transcript:"Il Comune di Bologna ha annunciato che da sabato prossimo la biblioteca centrale resterà aperta fino alle dieci di sera. La decisione arriva dopo la richiesta di molti studenti universitari, che cercavano spazi tranquilli per studiare. Per i primi tre mesi l'orario serale sarà sperimentale; se le presenze saranno alte, diventerà definitivo. L'assessora alla cultura ha spiegato che l'ingresso resterà gratuito e che ogni mese saranno organizzati due concerti di musica da camera. I commercianti della zona sono contenti, perché si aspettano più clienti nei bar vicini.",
+    mc:[
+      { q:"Qual è la notizia principale?", o:["La biblioteca centrale resterà aperta fino alle dieci di sera.","La biblioteca chiuderà per tre mesi.","L'ingresso alla biblioteca diventerà a pagamento.","La biblioteca cambierà sede."], a:0, why:"La prima frase annuncia l'orario serale." },
+      { q:"Perché il Comune ha preso questa decisione?", o:["Per rispondere alla richiesta degli studenti universitari.","Per aumentare il prezzo dei biglietti.","Per organizzare una festa.","Per aiutare i commercianti a chiudere prima."], a:0, why:"Gli studenti «cercavano spazi tranquilli per studiare»." },
+      { q:"Che cosa succederà se le presenze saranno alte?", o:["L'orario serale diventerà definitivo.","La biblioteca chiuderà prima.","L'ingresso diventerà a pagamento.","I concerti saranno cancellati."], a:0, why:"«Se le presenze saranno alte, diventerà definitivo»." },
+      { q:"Quale attività sarà organizzata ogni mese?", o:["Due concerti di musica da camera","Un corso di lingue","Una mostra di fotografia","Tre incontri con scrittori"], a:0, why:"L'assessora parla di due concerti di musica da camera al mese." },
+      { q:"Perché i commercianti della zona sono contenti?", o:["Si aspettano più clienti nei bar vicini.","Pagheranno meno tasse.","Potranno chiudere prima la sera.","Vogliono usare la biblioteca come negozio."], a:0, why:"Va dedotto da «si aspettano più clienti»." }
+    ]
+  },
+  {
+    /* SAMPLE (Instructional Guidance): original script and invented details for training. setOnly: used in timed listening sets; read aloud by the device voice or replaced by a real recording. */
+    id:'a03', kind:'ascolto', draft:true, setOnly:true, sample:true, caso:1, n:4, type:'ASCOLTO', src:'Instructional Guidance',
+    title:"Pasta alla gricia (SAMPLE)", short:"Una ricetta spiegata a voce.", author:'Script originale della Prof, per esercizio',
+    intro:"Una breve spiegazione audio di una ricetta della cucina romana.", url:'', minutes:10,
+    transcript:"Per preparare una vera pasta alla gricia servono pochi ingredienti: guanciale, pecorino romano e pepe nero. Prima, tagliate il guanciale a strisce e fatelo rosolare in padella, senza olio, a fuoco medio per circa otto minuti. Intanto, cuocete la pasta in acqua salata e conservate una tazza di acqua di cottura. Scolate la pasta e mettetela nella padella con il guanciale. Spegnete il fuoco, aggiungete il pecorino e un po' di acqua di cottura, e mescolate bene fino a ottenere una crema. Infine, aggiungete il pepe. Attenzione: non aggiungete il formaggio con il fuoco acceso, altrimenti si formano dei grumi.",
+    mc:[
+      { q:"Qual è lo scopo dell'audio?", o:["Spiegare come preparare un piatto.","Vendere ingredienti.","Raccontare la storia di Roma.","Confrontare due ristoranti."], a:0, why:"Il parlante dà istruzioni passo per passo." },
+      { q:"Per quanto tempo si fa rosolare il guanciale?", o:["Circa otto minuti","Circa tre minuti","Circa quindici minuti","Circa venti minuti"], a:0, why:"«A fuoco medio per circa otto minuti»." },
+      { q:"Perché bisogna conservare l'acqua di cottura?", o:["Per mescolarla al formaggio e ottenere una crema.","Per cuocere il guanciale.","Per lavare la padella.","Per aggiungere sale alla pasta."], a:0, why:"Si aggiunge «un po' di acqua di cottura» con il pecorino." },
+      { q:"Che cosa bisogna evitare?", o:["Aggiungere il formaggio con il fuoco acceso","Usare il pepe nero","Salare l'acqua","Tagliare il guanciale a strisce"], a:0, why:"Altrimenti «si formano dei grumi»." },
+      { q:"Qual è l'ultimo passaggio della ricetta?", o:["Aggiungere il pepe","Scolare la pasta","Spegnere il fuoco","Rosolare il guanciale"], a:0, why:"La parola «Infine» segnala l'ultimo passaggio." }
+    ]
+  },
+  {
+    /* SAMPLE (Interview): original script and invented details for training. setOnly: used in timed listening sets; read aloud by the device voice or replaced by a real recording. */
+    id:'a04', kind:'ascolto', draft:true, setOnly:true, sample:true, caso:1, n:5, type:'ASCOLTO', src:'Interview',
+    title:"Un anno a Palermo (SAMPLE)", short:"Un'intervista radiofonica con uno studente.", author:'Script originale della Prof, per esercizio',
+    intro:"Un'intervista a una radio per giovani con uno studente americano che ha passato un anno in Sicilia. Le persone sono inventate.", url:'', minutes:10,
+    transcript:"Conduttrice: Benvenuti a «Radio Giovani». Oggi con noi c'è Davide, diciotto anni, che ha passato un anno a Palermo. Davide, che cosa ti è piaciuto di più? Davide: Il cibo, senza dubbio, ma soprattutto le persone: i vicini mi invitavano sempre a pranzo la domenica. Conduttrice: Ci sono state difficoltà? Davide: All'inizio il dialetto. Capivo poco e mi sentivo escluso. Poi ho iniziato a fare domande, e la gente rideva ma mi spiegava tutto. Conduttrice: Che consiglio dai a chi parte? Davide: Di non avere paura di sbagliare. Io ho imparato di più parlando con la signora del bar che in classe.",
+    mc:[
+      { q:"Di che cosa parla l'intervista?", o:["Dell'anno che Davide ha passato a Palermo","Di un concerto a Palermo","Di una ricetta siciliana","Di un corso di dialetto"], a:0, why:"La conduttrice presenta Davide e il suo anno a Palermo." },
+      { q:"Che cosa ha apprezzato di più Davide?", o:["Soprattutto le persone","Soltanto il clima","La scuola","Il dialetto"], a:0, why:"Dice «il cibo, ma soprattutto le persone»." },
+      { q:"Quale difficoltà ha avuto Davide all'inizio?", o:["Capiva poco il dialetto.","Non trovava casa.","Non aveva amici americani.","Non mangiava la pasta."], a:0, why:"«All'inizio il dialetto. Capivo poco»." },
+      { q:"Come reagiva la gente alle domande di Davide?", o:["Rideva, ma gli spiegava tutto.","Non rispondeva.","Si arrabbiava.","Parlava in inglese."], a:0, why:"«La gente rideva ma mi spiegava tutto»: un atteggiamento accogliente." },
+      { q:"Che cosa suggerisce Davide sul modo migliore di imparare la lingua?", o:["Parlare con le persone nella vita quotidiana","Studiare soltanto in classe","Evitare gli errori","Guardare solo la televisione"], a:0, why:"Ha imparato di più «parlando con la signora del bar che in classe»." }
+    ]
+  },
+  {
+    /* SAMPLE (Presentation): original script and invented details for training. setOnly: used in timed listening sets; read aloud by the device voice or replaced by a real recording. */
+    id:'a05', kind:'ascolto', draft:true, setOnly:true, sample:true, caso:1, n:6, type:'ASCOLTO', src:'Presentation',
+    title:"Il Palio di Siena (SAMPLE)", short:"Una breve conferenza.", author:'Script originale della Prof, per esercizio',
+    intro:"Una breve conferenza di un professore a una classe di studenti. I dettagli sono semplificati per l'esercizio.", url:'', minutes:10,
+    transcript:"Buongiorno a tutti. Oggi vi parlo del Palio di Siena, una corsa di cavalli che si svolge due volte l'anno, il due luglio e il sedici agosto, nella piazza principale della città. Siena è divisa in diciassette contrade, e dieci di queste partecipano a ogni corsa. La gara dura meno di novanta secondi, ma la preparazione dura tutto l'anno. Per i senesi il Palio non è soltanto uno spettacolo: è un modo di appartenere a una comunità, perché ogni contrada ha la sua bandiera, il suo museo e perfino la sua chiesa. Concludo con una domanda: che cosa significa, per voi, appartenere a un luogo?",
+    mc:[
+      { q:"Qual è l'idea principale della conferenza?", o:["Il Palio è un modo di sentirsi parte di una comunità.","Il Palio è soltanto una gara veloce.","Siena ha troppi turisti.","I cavalli sono più importanti dei fantini."], a:0, why:"Il professore dice: non è soltanto uno spettacolo, è un modo di appartenere a una comunità." },
+      { q:"In quali date si svolge il Palio?", o:["Il 2 luglio e il 16 agosto","Il 2 giugno e il 15 agosto","Il 16 luglio e il 2 agosto","Il 2 luglio e il 15 settembre"], a:0, why:"«Il due luglio e il sedici agosto»." },
+      { q:"Quante contrade partecipano a ogni corsa?", o:["Dieci","Diciassette","Sette","Novanta"], a:0, why:"Diciassette è il totale delle contrade; dieci corrono. Novanta si riferisce ai secondi." },
+      { q:"Quanto dura la gara?", o:["Meno di novanta secondi","Più di un'ora","Tutto l'anno","Circa dieci minuti"], a:0, why:"«Meno di novanta secondi»; è la preparazione che dura tutto l'anno." },
+      { q:"Perché il professore finisce con una domanda?", o:["Per far riflettere il pubblico sull'argomento","Per cambiare argomento","Per chiedere un voto","Per annunciare una pausa"], a:0, why:"Una domanda finale invita gli ascoltatori a pensare al proprio rapporto con un luogo." }
+    ]
+  },
+  {
     /* SAMPLE ARTICLE + CHART SET: original text and invented numbers written for training. setOnly: used only in timed sets (Include sample exhibits). */
     id:'p02', kind:'lettura', draft:true, setOnly:true, sample:true, caso:3, n:1, type:'LETTURA', src:'Article and Chart',
     title:'Musica in streaming: l’Italia cambia ritmo (SAMPLE)',
@@ -547,7 +603,7 @@ function tabs(){
   const inProva = r.indexOf('/prova/') === 0 || r === '/udienza' || r === '/set' || r === '/saggio';
   return h('nav', { class:'tabs', 'aria-label':'Main' },
     t('#/', 'Oggi', 'o', '<path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>', r === '/' || r === '' || inProva),
-    t('#/parlato', 'Parlato', 'p', '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 12a6 6 0 0 0 12 0h-2a4 4 0 0 1-8 0zm5 6.9V21h2v-2.1z"/>', r === '/parlato' || r === '/ppr'),
+    t('#/parlato', 'Parlato', 'p', '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 12a6 6 0 0 0 12 0h-2a4 4 0 0 1-8 0zm5 6.9V21h2v-2.1z"/>', r === '/parlato' || r === '/ppr' || r === '/presentazione'),
     t('#/skills', 'Skills', 's', '<rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="5" width="4" height="15" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/>', r === '/skills'),
     t('#/archivio', 'Archivio', 'a', '<path d="M3 6h7l2 2h9v11H3z"/>', r === '/archivio'));
 }
@@ -629,8 +685,8 @@ function viewOggi(){
       hero,
       h('div', { class:'card' },
         h('div', { class:'mono mute' }, 'Parlato · Q2 · 15% of the exam'),
-        h('div', { style:'font-size:16px' }, 'Four unseen questions, 40 seconds each. Train the exam format with your headset.'),
-        h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/parlato' }, 'Open the speaking drill'), h('a', { class:'btn alt', href:'#/ppr' }, 'Build my PPR'))),
+        h('div', { style:'font-size:16px' }, 'Q1: a presentation from your PPR, 3 minutes to prepare, 3 to talk. Q2: four unseen questions, 40 seconds each. Train with your headset.'),
+        h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/parlato' }, 'Open the speaking drill'), h('a', { class:'btn alt', href:'#/presentazione' }, 'Practice the presentation (Q1)'), h('a', { class:'btn alt', href:'#/ppr' }, 'Build my PPR'))),
       h('div', { class:'card' },
         h('div', { class:'mono mute' }, 'Saggio · Q3 · 15% of the exam'),
         h('div', { style:'font-size:16px' }, 'Three sources, one position, 55 minutes. Practice the argumentative essay under the real clock.'),
@@ -1158,6 +1214,7 @@ function audioPane(X, st){
     player = h('div', { class:'stack', style:'gap:10px' },
       h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Load the audio file your teacher gave you. It plays only on this device and is never uploaded. If you reopen the page, load it again.'),
       h('div', { class:'row' }, h('button', { class:'btn sm', onclick:function(){ fileIn.click(); } }, 'Load the audio file'), fileIn),
+      (X.sample && X.transcript && ttsOk()) ? h('div', { class:'row' }, h('button', { class:'btn alt sm', onclick:function(){ st.plays = (st.plays || 0) + 1; save(); speakIt(X.transcript); paint(); } }, 'Play with the device voice (sample)')) : null,
       X.url ? h('div', { class:'row' },
         h('a', { class:'btn alt sm', href:X.url, target:'_blank', rel:'noopener' }, 'Or open the original ↗'),
         h('button', { class:'btn alt sm', onclick:function(){ st.plays = (st.plays || 0) + 1; save(); paint(); } }, 'I listened once (count it)')) : null);
@@ -1296,8 +1353,8 @@ function viewAscolto(X){
 function viewProva(id){
   const X = EXHIBITS.find(function(e){ return e.id === id; });
   if (!X) return h('main', {}, h('p', {}, 'Prova not found. '), h('a', { href:'#/' }, 'Back'));
-  if (X.kind === 'ascolto') return viewAscolto(X);
   if (X.setOnly) return h('main', {}, h('div', { style:'margin:10px 0 16px' }, h('a', { href:'#/', class:'mono', style:'text-decoration:none' }, '← Today')), h('div', { class:'card' }, h('h2', {}, 'This sample is used only in timed sets.'), h('p', { class:'mute' }, 'Open the timed set and tick “Include sample exhibits”.'), h('a', { class:'btn', href:'#/set' }, 'Go to the timed set')));
+  if (X.kind === 'ascolto') return viewAscolto(X);
   const st = ex(id);
   let right;
   if (st.filed) right = filedPanel(X, st);
@@ -1607,10 +1664,14 @@ function loName(t){ return LO[t] ? t + ' · ' + LO[t] : t; }
 const MC_TAGS = {
   p01:['1.B.1', '1.A.2', '1.A.1', '1.B.5', '1.C.2', '1.B.1'],
   a01:['1.B.1', '1.A.2', '1.A.1', '1.B.3', '1.A.1', '1.C.1'],
-  p02:['1.B.1', '1.A.2', '1.A.2', '1.B.3', '1.C.1']
+  p02:['1.B.1', '1.A.2', '1.A.2', '1.B.3', '1.C.1'],
+  a02:['1.B.1', '1.A.1', '1.A.1', '1.A.1', '1.C.3'],
+  a03:['1.B.1', '1.A.1', '1.A.1', '1.A.1', '1.B.4'],
+  a04:['1.B.1', '1.A.1', '1.A.1', '1.B.3', '1.C.3'],
+  a05:['1.B.1', '1.A.1', '1.A.2', '1.A.2', '1.B.4']
 };
 var SETQ = null;
-function setNew(){ return { phase:'setup', kind:'reading', drafts:false, n:5, items:[], i:0, ans:[], deadline:0, allowed:0, iv:null, audio:{}, used:0, res:null }; }
+function setNew(){ return { twice:false, pc:{}, phase:'setup', kind:'reading', drafts:false, n:5, items:[], i:0, ans:[], deadline:0, allowed:0, iv:null, audio:{}, used:0, res:null }; }
 function setPool(kind, drafts){
   return shuffle(EXHIBITS.filter(function(X){
     if (X.draft && !drafts) return false;
@@ -1659,11 +1720,42 @@ function srcHead(X){
   return h('div', {}, X.src ? h('div', { class:'mono', style:'color:#C8FF3D;font-size:11px' }, 'SOURCE TYPE · ' + X.src.toUpperCase()) : null,
     X.intro ? h('div', { class:'mute', style:'font-size:13px;margin:4px 0' }, h('b', {}, 'Introduction: '), X.intro) : null);
 }
+function listenWidget(X){
+  const wrap = h('div', { class:'stack', style:'gap:8px' });
+  const note = h('div', { class:'mono mute', style:'font-size:12px' });
+  const count = function(){ return SETQ.pc[X.id] || 0; };
+  const capped = function(){ return SETQ.twice && count() >= 2; };
+  if (AUDIO_URL[X.id]){
+    const a = h('audio', { controls:true, src:AUDIO_URL[X.id], style:'width:100%' });
+    const paint = function(){
+      if (capped()){ a.removeAttribute('controls'); a.style.display = 'none'; }
+      note.textContent = 'Plays: ' + count() + (SETQ.twice ? ' / 2' : ' · replays allowed');
+    };
+    a.addEventListener('ended', function(){ SETQ.pc[X.id] = count() + 1; paint(); });
+    paint();
+    wrap.append(h('div', { class:'mono mute' }, 'Audio · ' + X.title), a, note);
+    return wrap;
+  }
+  if (X.transcript && ttsOk()){
+    const b = h('button', { class:'btn' });
+    const paint = function(){
+      b.textContent = capped() ? 'Played twice' : 'Play (' + count() + (SETQ.twice ? ' / 2' : '') + ')';
+      if (capped()) b.setAttribute('disabled', '');
+      note.textContent = 'Read aloud by your device voice. Not authentic audio.';
+    };
+    b.addEventListener('click', function(){ if (capped()) return; SETQ.pc[X.id] = count() + 1; speakIt(X.transcript); paint(); });
+    paint();
+    wrap.append(h('div', { class:'mono mute' }, 'Audio · ' + X.title), h('div', { class:'row' }, b), note);
+    return wrap;
+  }
+  wrap.append(h('div', { class:'alert' }, 'No audio loaded for this exhibit.'));
+  return wrap;
+}
 function setPassage(it){
   const X = it.X, st = ex(X.id);
   if (SETQ.kind === 'listening'){
-    if (!SETQ.audio[X.id] && AUDIO_URL[X.id]) SETQ.audio[X.id] = h('audio', { controls:true, src:AUDIO_URL[X.id], style:'width:100%' });
-    return SETQ.audio[X.id] ? h('div', { class:'card' }, srcHead(X), h('div', { class:'mono mute' }, 'Audio · ' + X.title), SETQ.audio[X.id], X.chart ? chartBlock(X.chart) : null) : h('div', { class:'alert' }, 'No audio loaded for this exhibit.');
+    if (!SETQ.audio[X.id]) SETQ.audio[X.id] = listenWidget(X);
+    return h('div', { class:'card' }, srcHead(X), SETQ.audio[X.id], X.chart ? chartBlock(X.chart) : null);
   }
   const paras = X.text ? X.text : parasOf(st);
   if (paras.length) return h('div', { class:'stack' }, h('div', { class:'card' }, srcHead(X)), h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, X.title), h('div', { class:'body' }, paras.map(function(p){ return h('p', {}, p); }))), X.chart ? chartBlock(X.chart) : null);
@@ -1682,13 +1774,14 @@ function setSetup(){
   const allowed = n * SET_RATE[Q.kind];
   function pick(k){ return h('button', { class:'chip' + (Q.kind === k ? ' on' : ''), 'aria-pressed':String(Q.kind === k), onclick:function(){ Q.kind = k; render(); } }, k === 'reading' ? 'LETTURA · 30 Q / 40 MIN' : 'ASCOLTO · 25 Q / 40 MIN'); }
   const sizes = [5, 10, 25, 30].filter(function(x){ return x <= Math.max(5, avail.length) || x === 5; }).map(function(x){ return h('button', { class:'chip' + (Q.n === x ? ' on' : ''), 'aria-pressed':String(Q.n === x), onclick:function(){ Q.n = x; render(); } }, x + ' QUESTIONS'); });
+  const voiceOk = function(X){ return !!(X.transcript && ttsOk()); };
   const audioRows = Q.kind === 'listening' ? pool.map(function(X){
     const fileIn = h('input', { type:'file', accept:'audio/*', style:'display:none', 'aria-label':'Load audio for ' + X.title });
     fileIn.addEventListener('change', function(){ const f = fileIn.files && fileIn.files[0]; if (!f) return; AUDIO_URL[X.id] = URL.createObjectURL(f); delete Q.audio[X.id]; render(); });
-    return h('div', { class:'rev', style:'align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap' }, h('span', {}, X.title),
-      h('span', {}, AUDIO_URL[X.id] ? h('span', { class:'mono', style:'color:#3DDC84' }, 'AUDIO LOADED ✓') : h('button', { class:'btn alt sm', onclick:function(){ fileIn.click(); } }, 'Load audio file'), fileIn));
+    return h('div', { class:'rev', style:'align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap' }, h('span', {}, (X.src ? X.src + ' · ' : '') + X.title),
+      h('span', {}, AUDIO_URL[X.id] ? h('span', { class:'mono', style:'color:#3DDC84' }, 'AUDIO LOADED ✓') : (voiceOk(X) ? h('span', { class:'mono', style:'color:#FFC83D' }, 'DEVICE VOICE') : h('button', { class:'btn alt sm', onclick:function(){ fileIn.click(); } }, 'Load audio file')), fileIn));
   }) : [];
-  const audioOk = Q.kind !== 'listening' || pool.every(function(X){ return AUDIO_URL[X.id]; });
+  const audioOk = Q.kind !== 'listening' || pool.every(function(X){ return AUDIO_URL[X.id] || voiceOk(X); });
   const unseen = pool.filter(function(X){ return !ex(X.id).filed; }).length;
   return h('div', { class:'card' },
     h('div', { class:'mono mute' }, 'Set · Section II · multiple choice · 50% of the exam'),
@@ -1698,6 +1791,7 @@ function setSetup(){
     h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, sizes),
     h('label', { style:'display:flex;gap:8px;align-items:center;font-size:13px' }, h('input', { type:'checkbox', checked:Q.drafts, onchange:function(e){ Q.drafts = e.target.checked; render(); } }), 'Include sample exhibits (teacher preview)'),
     avail.length ? h('div', { class:'mono mute' }, avail.length + ' questions available · this set: ' + n + ' · time: ' + fmtClock(allowed) + (unseen === 0 ? ' · all of these sources are ones you have already filed (review, not a fresh test)' : '')) : h('div', { class:'alert' }, 'No questions available for this type yet. More sources are coming. Include the sample exhibits to try the flow.'),
+    Q.kind === 'listening' ? h('label', { style:'display:flex;gap:8px;align-items:center;font-size:13px' }, h('input', { type:'checkbox', checked:Q.twice, onchange:function(e){ Q.twice = e.target.checked; render(); } }), 'Each audio plays only twice (true for the Q2 questions and the essay audio; the multiple-choice rule is not confirmed)') : null,
     audioRows,
     h('div', { class:'row' }, h('button', { class:'btn', disabled:!avail.length || !audioOk, onclick:function(){
       Q.items = avail.slice(0, n);
@@ -1712,7 +1806,7 @@ function setSetup(){
       }, 1000);
       render();
     } }, 'Start the clock')),
-    h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'Listening sets need each audio file loaded on this device first. The audio rules for the multiple-choice listening section are not confirmed, so replays are not limited here.'));
+    h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'Real recordings must be loaded on this device first. Sample sources with a script can be read by your device voice, which is not authentic audio. Tick the two-plays box to practice the likely exam rule.'));
 }
 
 function setTake(){
@@ -1899,9 +1993,10 @@ const ESSAY_SAMPLE = {
   pats:[/ferrante|fonte\s*1|prima fonte|primo (articolo|testo)|vetrina/i, /grafico|fonte\s*2|seconda fonte|81\s*%|58\s*%|47\s*%|39\s*%|33\s*%|per cento/i, /bellini|psicolog|fonte\s*3|terza fonte|intervista|audio/i],
   model:{
     thesis:"I social network aiutano i giovani a costruire la propria identità solo quando diventano uno spazio per condividere interessi, e la limitano quando si riducono alla ricerca di approvazione.",
-    outline:["Fonte 3 (Bellini, audio): un ragazzo timido trova amici grazie a un canale di musica → i social possono aiutare.","Fonte 2 (grafico): il 58% scopre interessi e passioni e il 39% mostra i propri lavori, ma il 47% segue moda e influencer → gli usi creativi esistono, però non sono gli unici.","Fonte 1 (Ferrante): il 64% si sente più libero online, ma la studentessa non pubblica se pensa che piaccia poco → l'approvazione può limitare."]
+    outline:["Fonte 3 (Bellini, audio): un ragazzo timido trova amici grazie a un canale di musica → i social possono aiutare.","Fonte 2 (grafico): il 58% scopre interessi e passioni e il 39% mostra i propri lavori, ma il 47% segue moda e influencer → gli usi creativi esistono, però non sono gli unici.","Fonte 1 (Ferrante): il 64% si sente più libero online, ma la studentessa non pubblica se pensa che piaccia poco → l'approvazione può limitare.","Controargomento: alcuni dicono che i social sono una perdita di tempo → ma l'81% li usa per restare in contatto con gli amici, quindi hanno una funzione sociale reale."]
   }
 };
+const ESSAY_OPP = ['tuttavia', "d'altra parte", 'alcuni sostengono', 'alcuni pensano', 'è vero che', 'anche se', 'sebbene', 'nonostante', 'si potrebbe obiettare', 'al contrario', 'chi sostiene il contrario', 'obiezione'];
 const ESSAY_CONN = ['inoltre', 'tuttavia', 'quindi', 'perciò', 'infatti', 'per esempio', 'ad esempio', 'invece', 'in conclusione', 'd\'altra parte', 'secondo', 'anche se', 'nonostante', 'pertanto', 'di conseguenza', 'mentre', 'sebbene', 'in primo luogo', 'infine'];
 var ESSAY_IV = null;
 function essayStore(){
@@ -1910,7 +2005,8 @@ function essayStore(){
   if (!E.phase) E.phase = 'intro';
   if (!E.mode) E.mode = 'sample';
   E.notes = E.notes || ['', '', ''];
-  E.outline = E.outline || ['', '', ''];
+  E.outline = E.outline || ['', '', '', ''];
+  while (E.outline.length < 4) E.outline.push('');
   E.thesis = E.thesis || ''; E.text = E.text || ''; E.plays = E.plays || 0;
   E.cp = E.cp || { prompt:'', s1:'', s2:'', s3:'' };
   return E;
@@ -1924,7 +2020,7 @@ function essayPacket(E){
     pats:[/fonte\s*1|prima fonte|primo (articolo|testo)/i, /fonte\s*2|seconda fonte|grafico/i, /fonte\s*3|terza fonte|audio|intervista/i], model:null };
 }
 function essayReset(E){
-  E.phase = 'intro'; E.notes = ['', '', '']; E.outline = ['', '', '']; E.thesis = ''; E.text = ''; E.plays = 0; E.start = 0; E.deadline = 0; E.used = 0; E.graded = false;
+  E.phase = 'intro'; E.notes = ['', '', '']; E.outline = ['', '', '', '']; E.thesis = ''; E.text = ''; E.plays = 0; E.start = 0; E.deadline = 0; E.used = 0; E.graded = false;
   save();
 }
 function essayTimer(){
@@ -1952,9 +2048,19 @@ function essayChecks(E, P){
     { ok:P.pats[0].test(t), t:'Fonte 1 named or clearly cited' },
     { ok:P.pats[1].test(t), t:'Fonte 2 named or clearly cited' },
     { ok:P.pats[2].test(t), t:'Fonte 3 named or clearly cited' },
-    { ok:conn.length >= 4, t:'Connectors: ' + conn.length + ' different (aim for 4 or more)' }
+    { ok:conn.length >= 4, t:'Connectors: ' + conn.length + ' different (aim for 4 or more)' },
+    { ok:ESSAY_OPP.some(function(c){ return low.indexOf(c) >= 0; }), t:'An opposing view acknowledged and answered' }
   ];
   return rows;
+}
+function accentBar(ta){
+  return h('div', { style:'display:flex;gap:6px;flex-wrap:wrap' }, ['à', 'è', 'é', 'ì', 'ò', 'ù', 'À', 'È'].map(function(ch){
+    return h('button', { class:'chip', type:'button', 'aria-label':'Insert ' + ch, onclick:function(){
+      const a = ta.selectionStart || 0, b = ta.selectionEnd || 0;
+      ta.value = ta.value.slice(0, a) + ch + ta.value.slice(b);
+      ta.selectionStart = ta.selectionEnd = a + 1; ta.focus(); ta.dispatchEvent(new Event('input'));
+    } }, ch);
+  }));
 }
 function essayChecksPanel(E, P){
   const box = h('div', { class:'hlpanel' });
@@ -2027,9 +2133,10 @@ function essayWork(E){
   thesis.addEventListener('input', function(){ E.thesis = thesis.value; save(); checks.paint(); });
   const plan = h('div', { class:'card' },
     h('h2', { style:'font-size:24px' }, '2 · My position and plan'),
-    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'One sentence that answers the prompt and takes a side. Then one paragraph per source, each proving your position.'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'One sentence that answers the prompt and takes a side. Then one paragraph per source, each proving your position, and one for the other side with your answer to it.'),
     h('div', { class:'field' }, h('label', {}, 'My position'), thesis),
-    area(E.outline, 0, 'Paragraph 1', 'Claim + source + evidence + why it proves my position', 70), area(E.outline, 1, 'Paragraph 2', 'Claim + source + evidence + why it proves my position', 70), area(E.outline, 2, 'Paragraph 3', 'Claim + source + evidence + why it proves my position', 70));
+    area(E.outline, 0, 'Paragraph 1', 'Claim + source + evidence + why it proves my position', 70), area(E.outline, 1, 'Paragraph 2', 'Claim + source + evidence + why it proves my position', 70), area(E.outline, 2, 'Paragraph 3', 'Claim + source + evidence + why it proves my position', 70),
+    area(E.outline, 3, 'Counterargument + response', 'What would someone on the other side say? Which source gives it? How do I answer it?', 70));
   const wc = h('span', { class:'mono mute' });
   const essay = h('textarea', { id:'essay-text', 'aria-label':'Essay', placeholder:'Scrivi il tuo saggio qui. Typing accents: à è é ì ò ù.', style:'min-height:340px' });
   essay.value = E.text;
@@ -2039,7 +2146,7 @@ function essayWork(E){
   const write = h('div', { class:'card' },
     h('h2', { style:'font-size:24px' }, '3 · Write the essay'),
     h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Open with your position. Name each source when you use it («Secondo Ferrante…», «Il grafico mostra…», «Nell\'intervista, Bellini…»). Explain how each piece of evidence supports your side. Close by returning to your position.'),
-    essay, wc, checks,
+    essay, accentBar(essay), wc, checks,
     h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ if (wordCount(E.text) < 30 && !confirm('The essay is very short. Submit anyway?')) return; essayEnd(); } }, 'Submit the essay')));
   return h('div', { class:'stack' }, status,
     h('div', { class:'card' }, h('div', { class:'mono mute' }, 'THE PROMPT'), h('div', { style:'font-size:17px;line-height:1.5' }, P.prompt)),
@@ -2094,6 +2201,136 @@ function viewSaggio(){
 }
 
 /* ============================================================
+   v3.4 PRESENTAZIONE: Q1 "Project Presentation" drill. Exam facts (2027 teacher reference): 3 minutes to prepare, 3 minutes to record,
+   20% of the score. She answers the exam-day prompt with only her printed PPR in front of her (scratch paper allowed). The training prompt asks for
+   at least two "exam-day factors", modelled on the Sularz mini-exam (a PD simulation, not College Board). The real prompt arrives in January:
+   paste it on the PPR page and it replaces the practice prompt here. Recordings stay on this device.
+   ============================================================ */
+const PRES_DEFAULT = "Immagina che il tuo comune stia organizzando un festival culturale e che il comitato voglia includere la musica della comunità che hai studiato. Fai una breve presentazione al comitato per spiegare perché questa musica merita un posto nel festival. Affronta almeno due dei fattori elencati e sostienili con le informazioni delle fonti.";
+const PRES_FACTORS = [
+  { c:'Products and practices', t:'Instruments, songs and genres' },
+  { c:'Products and practices', t:'Places and events where music is shared' },
+  { c:'Products and practices', t:'How music is taught and passed on' },
+  { c:'Perspectives', t:'Values the music expresses' },
+  { c:'Perspectives', t:'Music and identity across generations' }
+];
+const PRES_SELF = ['Two factors explained with detail', 'A source cited', 'A perspective linked to a product or practice', 'Clear organization with transitions', 'Finished within the time, talking to the end'];
+var PRES = null, PRES_IV = null;
+function presNew(){ return { phase:'intro', len:'train', deadline:0, notes:'', url:'', micMsg:'', graded:false, counted:false, self:[false, false, false, false, false] }; }
+function presSecs(){ return PRES.len === 'exam' ? 180 : 60; }
+function presBoxes(){
+  const P = pprStore();
+  const mineFilled = P.mine.some(function(b){ return wordCount(b.t) > 0; });
+  return { boxes: mineFilled ? P.mine : PPR_SAMPLE.model, mine:mineFilled };
+}
+function presPrompt(){ const P = pprStore(); return (P.prompt || '').trim() || PRES_DEFAULT; }
+function presPpr(){
+  const B = presBoxes();
+  return h('div', { class:'hlpanel' }, h('div', { class:'mono', style:'color:#FFC83D' }, B.mine ? 'Your PPR (the only paper you get)' : 'Sample PPR (write yours on the PPR page)'),
+    B.boxes.map(function(b, i){ return h('div', { style:'margin-top:8px;font-size:16px' }, h('span', { class:'mono mute', style:'font-size:11px' }, PPR_ROLES[i] + ': '), b.t || '—'); }));
+}
+function gradeBox(gi, done, setDone){
+  const items = DESCRIPTORS[gi].items;
+  const sel = new Array(items.length).fill(null);
+  const rec = h('button', { class:'btn', disabled:true }, 'Record my teacher\'s result');
+  function chk(){ if (sel.every(function(v){ return v !== null; })) rec.removeAttribute('disabled'); else rec.setAttribute('disabled', ''); }
+  rec.addEventListener('click', function(){
+    if (rec.hasAttribute('disabled')) return;
+    S.skills = S.skills || {};
+    let cleared = false;
+    items.forEach(function(t, k){ const key = gi + '-' + k, n = S.skills[key] || 0; S.skills[key] = sel[k] ? n + 1 : 0; if (sel[k] && n + 1 === 3) cleared = true; });
+    setDone(); save(); render(); knock(); if (cleared) burst();
+  });
+  const crit = items.map(function(t, k){
+    const yes = h('button', { class:'chip', 'aria-pressed':'false' }, 'SOLID');
+    const no = h('button', { class:'chip', 'aria-pressed':'false' }, 'NEEDS WORK');
+    function paint(){ yes.classList.toggle('on', sel[k] === true); no.classList.toggle('on', sel[k] === false); yes.setAttribute('aria-pressed', String(sel[k] === true)); no.setAttribute('aria-pressed', String(sel[k] === false)); }
+    yes.addEventListener('click', function(){ sel[k] = true; paint(); chk(); });
+    no.addEventListener('click', function(){ sel[k] = false; paint(); chk(); });
+    return h('div', { class:'crit' }, h('span', {}, t), h('span', { class:'cb' }, yes, no));
+  });
+  if (done()) return h('p', { class:'mute' }, 'Result recorded. See your Skills tab.');
+  return h('div', { class:'stack', style:'gap:10px' },
+    h('h2', { style:'font-size:22px' }, 'When your teacher has listened'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Enter what she told you for each skill. SOLID only if she said it was strong. A skill clears after three SOLID results in a row, and any NEEDS WORK resets it.'),
+    crit, h('div', { class:'row' }, rec));
+}
+function presTimer(){
+  if (PRES_IV) return;
+  PRES_IV = setInterval(function(){
+    if (!PRES || PRES.phase !== 'prep'){ clearInterval(PRES_IV); PRES_IV = null; return; }
+    const left = Math.ceil((PRES.deadline - Date.now()) / 1000);
+    const el = document.getElementById('pres-timer');
+    if (el) el.textContent = fmtClock(left);
+    if (left <= 0){ clearInterval(PRES_IV); PRES_IV = null; PRES.phase = 'rec'; render(); }
+  }, 1000);
+}
+function presIntro(){
+  const chip = function(k, l){ return h('button', { class:'chip' + (PRES.len === k ? ' on' : ''), 'aria-pressed':String(PRES.len === k), onclick:function(){ PRES.len = k; render(); } }, l); };
+  const hasMine = presBoxes().mine;
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Parlato · Presentazione del progetto · Q1 · 20% of the exam'),
+    h('h2', { style:'font-size:32px' }, 'Prepare. Then talk.'),
+    h('p', { style:'margin:0' }, 'On the exam you get 3 minutes to prepare and 3 minutes to record. You talk to a committee. The only paper you have is your printed PPR. Nobody scores the PPR; they score your recording.'),
+    h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, chip('train', 'TRAINING · 1 + 1 MIN'), chip('exam', 'EXAM · 3 + 3 MIN')),
+    h('div', { class:'hlpanel' }, h('div', { class:'mono mute' }, 'The prompt'), h('p', { style:'margin:6px 0 0;font-size:16px;line-height:1.5' }, presPrompt())),
+    h('div', { class:'hlpanel' }, h('div', { class:'mono mute' }, 'Factors · choose at least two'), PRES_FACTORS.map(function(f){ return h('div', { style:'margin-top:6px;font-size:14px' }, h('span', { class:'mono mute', style:'font-size:10px' }, f.c.toUpperCase() + ' · '), f.t); })),
+    !hasMine ? h('div', { class:'alert' }, 'You have not written your own PPR yet, so the sample PPR will show. Build yours on the PPR page first, or practice with the sample.') : null,
+    h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'Practice prompt and factors are modelled on a teacher-training simulation, not College Board. Your real prompt arrives in January; paste it on the PPR page and it replaces this one. You need a wired headset.'),
+    h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ PRES.deadline = Date.now() + presSecs() * 1000; PRES.phase = 'prep'; render(); } }, 'Start preparing'), h('a', { class:'btn alt', href:'#/ppr' }, 'Build my PPR')));
+}
+function presPrep(){
+  presTimer();
+  const ta = h('textarea', { 'aria-label':'Scratch paper', placeholder:'Scratch paper. Key words only.', style:'min-height:120px' });
+  ta.value = PRES.notes; ta.addEventListener('input', function(){ PRES.notes = ta.value; });
+  return h('div', { class:'stack' },
+    h('div', { class:'card', style:'flex-direction:row;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5' }, h('span', { class:'mono mute' }, 'Preparation'), h('span', { id:'pres-timer', class:'mono', style:'font-size:22px;color:#C8FF3D' }, fmtClock(Math.ceil((PRES.deadline - Date.now()) / 1000)))),
+    h('div', { class:'card' }, h('div', { class:'mono mute' }, 'THE PROMPT'), h('div', { style:'font-size:17px;line-height:1.5' }, presPrompt()),
+      h('div', { class:'mute', style:'font-size:13px' }, 'Pick at least two factors: ' + PRES_FACTORS.map(function(f){ return f.t; }).join(' · '))),
+    presPpr(),
+    h('div', { class:'card' }, ta, h('div', { class:'row' }, h('button', { class:'btn alt', onclick:function(){ PRES.phase = 'rec'; PRES.deadline = 0; render(); } }, 'I am ready, go to recording'))));
+}
+function presRec(){
+  const secs = presSecs();
+  const tm = h('div', { class:'big', style:'font-size:64px;color:#C8FF3D' }, fmtClock(secs));
+  const status = h('div', { class:'mono mute' }, PRES.micMsg || 'You cannot stop early. When you press the button, the clock starts. Keep talking until it ends.');
+  const btn = h('button', { class:'btn hot', onclick:function(){
+    btn.setAttribute('disabled', '');
+    status.textContent = 'Recording… keep talking until the end.';
+    recordFor(secs, function(left){ tm.textContent = fmtClock(Math.max(0, left)); },
+      function(blob){ PRES.url = URL.createObjectURL(blob); PRES.phase = 'review'; render(); },
+      function(m){ PRES.micMsg = m; status.textContent = m; btn.removeAttribute('disabled'); });
+  } }, 'Start the recording');
+  return h('div', { class:'stack' },
+    h('div', { class:'card' }, h('div', { class:'mono mute' }, 'THE PROMPT'), h('div', { style:'font-size:17px;line-height:1.5' }, presPrompt())),
+    presPpr(),
+    PRES.notes ? h('div', { class:'hlpanel', style:'white-space:pre-wrap' }, h('div', { class:'mono mute' }, 'Your scratch paper'), PRES.notes) : null,
+    h('div', { class:'card' }, tm, status, h('div', { class:'row' }, btn)));
+}
+function presReview(){
+  if (!PRES.counted){ PRES.counted = true; S.pres = S.pres || { n:0 }; S.pres.n = (S.pres.n || 0) + 1; save(); }
+  const chips = PRES_SELF.map(function(t, i){
+    const c = h('button', { class:'chip' + (PRES.self[i] ? ' on' : ''), 'aria-pressed':String(PRES.self[i]) }, t);
+    c.addEventListener('click', function(){ PRES.self[i] = !PRES.self[i]; c.classList.toggle('on', PRES.self[i]); c.setAttribute('aria-pressed', String(PRES.self[i])); });
+    return c;
+  });
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Presentation ' + S.pres.n + ' recorded'),
+    h('h2', { style:'font-size:32px' }, 'Listen to yourself.'),
+    h('audio', { controls:true, src:PRES.url, style:'width:100%' }),
+    h('a', { class:'btn alt sm', href:PRES.url, download:'presentazione.webm', target:'_blank', rel:'noopener', style:'align-self:flex-start' }, 'Download for your teacher'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Check yourself honestly:'),
+    h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, chips),
+    gradeBox(0, function(){ return PRES.graded; }, function(){ PRES.graded = true; }),
+    h('div', { class:'row' }, h('button', { class:'btn alt', onclick:function(){ PRES = presNew(); render(); } }, 'Run it again'), h('a', { class:'btn ghost', href:'#/' }, 'Back to today')));
+}
+function viewPresentazione(){
+  if (!PRES) PRES = presNew();
+  const body = PRES.phase === 'intro' ? presIntro() : (PRES.phase === 'prep' ? presPrep() : (PRES.phase === 'rec' ? presRec() : presReview()));
+  return h('main', {}, h('div', { style:'margin:10px 0 16px' }, h('a', { href:'#/', class:'mono', style:'text-decoration:none' }, '← Today')), body);
+}
+
+/* ============================================================
    ROUTER
    ============================================================ */
 function render(){
@@ -2107,6 +2344,7 @@ function render(){
   else if (route === '/set') view = viewSet();
   else if (route === '/ppr') view = viewPpr();
   else if (route === '/saggio') view = viewSaggio();
+  else if (route === '/presentazione') view = viewPresentazione();
   else if (route === '/archivio') view = viewArchivio();
   else view = viewOggi();
   app.replaceChildren.apply(app, topbar().concat([tabs(), view]).filter(Boolean));
