@@ -85,6 +85,14 @@ main{order:2;width:100%;max-width:1060px;margin:0 auto;padding:8px 20px 40px}
 
 /* skills */
 .skill{background:var(--surf);border-radius:18px;padding:14px;border:2px solid var(--line);display:flex;flex-direction:column;gap:10px;min-height:96px;justify-content:space-between}
+.bar{height:8px;background:var(--surf2);border-radius:4px;overflow:hidden}
+.bar>div{height:8px;background:var(--acid);border-radius:4px}
+.chart{background:#fff;color:#0D0D11;border-radius:10px;padding:14px}
+.chart .ct{font-weight:600;font-size:14px;margin-bottom:10px}
+.chart .cr{display:grid;grid-template-columns:56px 1fr 44px;gap:8px;align-items:center;margin:6px 0;font-size:14px}
+.chart .cb{height:16px;background:#E8E6EF;border-radius:3px;overflow:hidden}
+.chart .cb>div{height:16px;background:#3B2FD9}
+.chart .cn{font-size:12px;color:#55535f;margin-top:8px}
 .skill .bar{height:8px;background:var(--surf2);border-radius:4px;overflow:hidden}
 .skill .bar>div{height:8px;background:var(--acid);border-radius:4px}
 .skill.done{border-color:var(--acid)}
@@ -189,7 +197,8 @@ const CASES = [
    The old email-reply / conversation / cultural-comparison groups were retired: those tasks are not on the 2027 exam. */
 const DESCRIPTORS = [
   { task:'Presentazione del progetto', meta:'Q1 · 3 min · 20%', items:['Addresses the prompt fully, with the required factors','Specific examples linking perspectives to products and practices','Logical organization, with transitions','Varied vocabulary, structures, culturally appropriate expressions','Clear delivery: natural pace, intonation, pronunciation'] },
-  { task:'Domande sul progetto', meta:'Q2 · 4 × 40 s · 15%', items:['Complete, relevant answer to each question','Cultural comparison or reflection in at least one answer','Clear, natural speech with varied language'] }
+  { task:'Domande sul progetto', meta:'Q2 · 4 × 40 s · 15%', items:['Complete, relevant answer to each question','Cultural comparison or reflection in at least one answer','Clear, natural speech with varied language'] },
+  { task:'Saggio argomentativo', meta:'Q3 · 55 min · 15%', items:['A clearly stated position','Evidence from all three sources, identified by source','Claims explained with the evidence','Logical organization and transitions','Varied vocabulary, structures, expressions'] }
 ];
 
 const EXHIBITS = [
@@ -298,7 +307,8 @@ const EXHIBITS = [
   {
     /* SAMPLE LISTENING EXHIBIT: original script written for testing; invented numbers. draft:true keeps it out of the student's path.
        Teacher preview: open  #/prova/a01  . To use as a real exhibit, record it (or load a real recording), then remove draft:true. */
-    id:'a01', kind:'ascolto', draft:true, sample:true, caso:1, n:2, type:'ASCOLTO',
+    id:'a01', kind:'ascolto', draft:true, sample:true, caso:1, n:2, type:'ASCOLTO', src:'Audio and Chart',
+    chart:{ title:'Giovani che controllano il telefono entro dieci minuti dal risveglio, per età (%) · dati inventati', unit:'%', rows:[['14 anni',62],['15 anni',66],['16 anni',70],['17 anni',74],['18 anni',78]] },
     title:'Voci giovani: identità e social (SAMPLE)',
     short:'Un programma radio sui social e l’identità.',
     author:'Script originale della Prof, per esercizio · dati inventati',
@@ -332,7 +342,42 @@ const EXHIBITS = [
         a:0, why:"«Tuttavia» e «invece» segnalano il cambio di opinione: per Luca i social mostrano chi è davvero." },
       { q:"Che cosa consigliano gli esperti?",
         o:["Vietare i social ai minorenni","Cercare un equilibrio tra social e amicizie reali","Usare i social solo di sera","Smettere di pubblicare foto"],
-        a:1, why:"«Un equilibrio: usare i social con attenzione, senza dimenticare gli amici in carne e ossa»." }
+        a:1, why:"«Un equilibrio: usare i social con attenzione, senza dimenticare gli amici in carne e ossa»." },
+      { q:"Marta racconta come usa i social. Secondo il grafico, quale percentuale dei ragazzi della sua età controlla il telefono entro dieci minuti dal risveglio?",
+        o:["Il 62%","Il 70%","Il 74%","Il 78%"],
+        a:2, why:"Nel programma Marta dice di avere diciassette anni; nel grafico, la barra dei 17 anni è il 74%. Il 70% è la media citata dal conduttore, non il dato dei diciassettenni." }
+    ]
+  },
+  {
+    /* SAMPLE ARTICLE + CHART SET: original text and invented numbers written for training. setOnly: used only in timed sets (Include sample exhibits). */
+    id:'p02', kind:'lettura', draft:true, setOnly:true, sample:true, caso:3, n:1, type:'LETTURA', src:'Article and Chart',
+    title:'Musica in streaming: l’Italia cambia ritmo (SAMPLE)',
+    short:'Streaming, vinile e concerti.',
+    author:'Testo originale della Prof, per esercizio · dati inventati',
+    intro:"Un breve articolo di un giornale online sulle abitudini musicali dei giovani italiani, con un grafico. I numeri e le persone sono inventati.",
+    url:'',
+    text:[
+      "Fino a pochi anni fa, per ascoltare un album bisognava comprare un CD o accendere la radio. Oggi basta uno smartphone. Secondo un'indagine presentata a Milano, la percentuale di giovani tra i 15 e i 24 anni che ascolta musica in streaming ogni giorno è passata dal 38% del 2020 al 71% del 2025.",
+      "Eppure la tradizione non scompare. I concerti dal vivo restano molto popolari e molti ragazzi tornano a comprare il vinile, spinti dalla voglia di possedere qualcosa di concreto. «Lo streaming è comodo», spiega la sociologa Anna Ferri, «ma non sostituisce l'emozione di un concerto.»",
+      "Secondo Ferri, il vero cambiamento non riguarda soltanto come si ascolta, ma anche quanto i giovani scoprono artisti di altri paesi."
+    ],
+    chart:{ title:'Giovani (15–24 anni) che ascoltano musica in streaming ogni giorno (%) · dati inventati', unit:'%', rows:[['2020',38],['2021',46],['2022',55],['2023',61],['2024',66],['2025',71]] },
+    mc:[
+      { q:"Qual è l'idea principale dell'articolo?",
+        o:["Lo streaming è cresciuto molto, ma concerti e vinile hanno ancora un ruolo.","Il vinile ha sostituito lo streaming.","I giovani non ascoltano più musica.","I concerti sono diventati troppo costosi."],
+        a:0, why:"Il testo racconta la crescita dello streaming («Eppure la tradizione non scompare») e poi concerti e vinile." },
+      { q:"Secondo il grafico, in quale anno la percentuale supera per la prima volta il 50%?",
+        o:["Nel 2021","Nel 2022","Nel 2023","Nel 2024"],
+        a:1, why:"Nel 2021 è 46%, nel 2022 è 55%." },
+      { q:"Quale frase descrive meglio l'andamento mostrato dal grafico?",
+        o:["La percentuale è aumentata ogni anno dal 2020 al 2025.","La percentuale è diminuita dopo il 2022.","La percentuale è rimasta stabile.","La percentuale è raddoppiata tra il 2024 e il 2025."],
+        a:0, why:"Le barre crescono ogni anno: 38, 46, 55, 61, 66, 71. Tra il 2024 e il 2025 la crescita è di 5 punti, non un raddoppio." },
+      { q:"Qual è l'atteggiamento della sociologa Ferri verso lo streaming?",
+        o:["Ne riconosce la comodità, ma pensa che non sostituisca i concerti.","È contraria e lo considera dannoso.","È entusiasta e crede che i concerti non servano più.","È indifferente."],
+        a:0, why:"«Lo streaming è comodo, ma non sostituisce l'emozione di un concerto»: il «ma» segnala l'opinione." },
+      { q:"Quale conclusione è confermata da articolo e grafico insieme?",
+        o:["Lo streaming quotidiano è cresciuto e riguarda ormai la maggioranza dei giovani, anche se esistono altri modi di vivere la musica.","Il vinile è cresciuto più dello streaming.","I concerti sono diminuiti ogni anno.","Gli artisti stranieri sono meno ascoltati."],
+        a:0, why:"Il grafico mostra il 71% nel 2025; l'articolo aggiunge che concerti e vinile continuano a contare. Le altre opzioni non sono sostenute da nessuna delle due fonti." }
     ]
   }
 ];
@@ -499,7 +544,7 @@ function tabs(){
   function t(href, label, key, icon, on){
     return h('a', { href:href, class:on ? 'on' : '', 'aria-current':on ? 'page' : null }, svg('<svg viewBox="0 0 24 24" aria-hidden="true">' + icon + '</svg>'), label);
   }
-  const inProva = r.indexOf('/prova/') === 0 || r === '/udienza' || r === '/set';
+  const inProva = r.indexOf('/prova/') === 0 || r === '/udienza' || r === '/set' || r === '/saggio';
   return h('nav', { class:'tabs', 'aria-label':'Main' },
     t('#/', 'Oggi', 'o', '<path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>', r === '/' || r === '' || inProva),
     t('#/parlato', 'Parlato', 'p', '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 12a6 6 0 0 0 12 0h-2a4 4 0 0 1-8 0zm5 6.9V21h2v-2.1z"/>', r === '/parlato' || r === '/ppr'),
@@ -586,6 +631,10 @@ function viewOggi(){
         h('div', { class:'mono mute' }, 'Parlato · Q2 · 15% of the exam'),
         h('div', { style:'font-size:16px' }, 'Four unseen questions, 40 seconds each. Train the exam format with your headset.'),
         h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/parlato' }, 'Open the speaking drill'), h('a', { class:'btn alt', href:'#/ppr' }, 'Build my PPR'))),
+      h('div', { class:'card' },
+        h('div', { class:'mono mute' }, 'Saggio · Q3 · 15% of the exam'),
+        h('div', { style:'font-size:16px' }, 'Three sources, one position, 55 minutes. Practice the argumentative essay under the real clock.'),
+        h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/saggio' }, 'Open the essay section'))),
       h('div', { class:'card' },
         h('div', { class:'mono mute' }, 'Set · multiple choice · 50% of the exam'),
         h('div', { style:'font-size:16px' }, 'Timed listening and reading questions under the real clock, with results by question type.'),
@@ -1119,7 +1168,7 @@ function audioPane(X, st){
     h('div', { class:'mute', style:'font-size:14px' }, X.intro),
     h('h2', { style:'font-size:24px;line-height:1.15' }, X.title),
     h('div', { class:'mute', style:'font-size:13px' }, X.author),
-    player, plays);
+    player, plays, X.chart ? chartBlock(X.chart) : null);
   paint();
   return pane;
 }
@@ -1248,6 +1297,7 @@ function viewProva(id){
   const X = EXHIBITS.find(function(e){ return e.id === id; });
   if (!X) return h('main', {}, h('p', {}, 'Prova not found. '), h('a', { href:'#/' }, 'Back'));
   if (X.kind === 'ascolto') return viewAscolto(X);
+  if (X.setOnly) return h('main', {}, h('div', { style:'margin:10px 0 16px' }, h('a', { href:'#/', class:'mono', style:'text-decoration:none' }, '← Today')), h('div', { class:'card' }, h('h2', {}, 'This sample is used only in timed sets.'), h('p', { class:'mute' }, 'Open the timed set and tick “Include sample exhibits”.'), h('a', { class:'btn', href:'#/set' }, 'Go to the timed set')));
   const st = ex(id);
   let right;
   if (st.filed) right = filedPanel(X, st);
@@ -1336,18 +1386,45 @@ function viewUdienza(){
    Questions are read by the browser's text-to-speech (Italian voice if the device has one).
    ============================================================ */
 const QA_BANK = [
-  { k:'info', q:'Qual è stata la scoperta più interessante della tua ricerca, e perché?' },
-  { k:'info', q:'Puoi descrivere un esempio concreto che hai trovato nelle tue fonti?' },
-  { k:'info', q:'Quale fonte è stata la più utile per il tuo progetto? Spiega perché.' },
-  { k:'info', q:'Chi sono le persone coinvolte nel tema che hai studiato, e che cosa fanno?' },
-  { k:'info', q:'Che cosa ti ha sorpreso di più mentre facevi la ricerca?' },
-  { k:'info', q:'Come è cambiato il tuo modo di vedere l\'argomento dopo la ricerca?' },
-  { k:'info', q:'Perché secondo te questo tema è importante per la comunità che hai scelto?' },
-  { k:'cmp',  q:'Come si confronta questo aspetto della cultura italiana con quello che conosci nella tua comunità?' },
-  { k:'cmp',  q:'C\'è qualcosa di simile nella tua cultura? Spiega le somiglianze e le differenze.' },
-  { k:'cmp',  q:'Quale prodotto culturale della tua ricerca useresti per spiegare il tema a un amico americano, e perché?' },
-  { k:'cmp',  q:'In che modo le pratiche che hai studiato riflettono i valori di quella comunità?' },
-  { k:'cmp',  q:'Se potessi cambiare una cosa nel modo in cui la comunità vive questo tema, che cosa cambieresti e perché?' }
+  /* k:'info' = answer with a detail + example. k:'cmp' = invites a comparison or reflection (the exam wants one per set).
+     c = question category, modelled on the two College Board question banks (12 categories + communication functions).
+     Italian wording is original, written for training; these are not College Board questions. */
+  { k:'info', c:'Clarification',      q:"Puoi spiegare meglio che cosa intendi quando dici che questo aspetto è importante?" },
+  { k:'info', c:'Clarification',      q:"Puoi descrivere con più dettagli l'esperienza o l'esempio che hai scelto?" },
+  { k:'info', c:'Research process',   q:"Come hai trovato le informazioni per il tuo progetto?" },
+  { k:'info', c:'Research process',   q:"Quale fonte è stata la più utile per il tuo progetto? Spiega perché." },
+  { k:'info', c:'Research process',   q:"Hai trovato informazioni contraddittorie? Come hai deciso di chi fidarti?" },
+  { k:'info', c:'Research process',   q:"Che cosa hai imparato che non ti aspettavi?" },
+  { k:'info', c:'Cultural products',  q:"Quale prodotto culturale, per esempio una canzone, un'opera o un monumento, rappresenta meglio il tuo tema?" },
+  { k:'info', c:'Cultural products',  q:"Che cosa ti ha colpito di più di un'opera o di un artista che hai studiato?" },
+  { k:'info', c:'Cultural practices', q:"Quale tradizione o usanza legata al tuo tema è più importante per gli italiani?" },
+  { k:'info', c:'Cultural practices', q:"Come si vive questo aspetto nella vita quotidiana in Italia?" },
+  { k:'info', c:'Cultural perspectives', q:"Quali valori emergono dalla tua ricerca?" },
+  { k:'info', c:'Cultural perspectives', q:"Che cosa pensano gli italiani di questo tema, secondo le tue fonti?" },
+  { k:'info', c:'Personal reflection', q:"Perché hai scelto questo tema?" },
+  { k:'info', c:'Personal reflection', q:"Quale parte della ricerca è stata più difficile, e come l'hai affrontata?" },
+  { k:'info', c:'Personal reflection', q:"Che cosa ti ha sorpreso di più mentre facevi la ricerca?" },
+  { k:'info', c:'Opinion',            q:"Secondo te, qual è l'aspetto più importante di questo tema? Perché?" },
+  { k:'info', c:'Opinion',            q:"Che cosa dovrebbe sapere uno studente straniero su questo argomento?" },
+  { k:'info', c:'Evidence',           q:"Quale esempio dalle tue fonti sostiene la tua opinione?" },
+  { k:'info', c:'Evidence',           q:"Quali dati o testimonianze ti hanno convinto di più?" },
+  { k:'info', c:'Follow-up',          q:"Puoi darmi un altro esempio?" },
+  { k:'info', c:'Follow-up',          q:"Che impatto ha questo tema sulla comunità che hai studiato?" },
+  { k:'info', c:'Future',             q:"Come pensi che questo tema cambierà nei prossimi dieci anni?" },
+  { k:'info', c:'Future',             q:"Come ti aiuterà questa ricerca in futuro?" },
+  { k:'info', c:'Recommendation',     q:"Che cosa consiglieresti a un compagno che inizia una ricerca simile?" },
+  { k:'info', c:'Recommendation',     q:"Quale aspetto consiglieresti di conoscere a chi visita l'Italia?" },
+  { k:'info', c:'Emotion',            q:"Quali emozioni hai provato mentre analizzavi le tue fonti?" },
+  { k:'info', c:'Problem solving',    q:"Che cosa faresti per far conoscere questo tema ai compagni della tua scuola?" },
+  { k:'info', c:'Unexpected',         q:"Se potessi fare una domanda a un artista italiano, che cosa chiederesti?" },
+  { k:'cmp',  c:'Comparison',         q:"Come si confronta questo aspetto della cultura italiana con quello che conosci nella tua comunità?" },
+  { k:'cmp',  c:'Comparison',         q:"C'è qualcosa di simile nella tua cultura? Spiega le somiglianze e le differenze." },
+  { k:'cmp',  c:'Comparison',         q:"Come si confronta il tuo tema con quello che si vive negli Stati Uniti?" },
+  { k:'cmp',  c:'Products and perspectives', q:"Quale prodotto culturale della tua ricerca useresti per spiegare il tema a un amico americano, e perché?" },
+  { k:'cmp',  c:'Practices and perspectives', q:"In che modo le pratiche che hai studiato riflettono i valori di quella comunità?" },
+  { k:'cmp',  c:'Reflection',         q:"Come è cambiato il tuo modo di vedere l'argomento dopo la ricerca?" },
+  { k:'cmp',  c:'Reflection',         q:"Che cosa ti ha insegnato questa ricerca sul rapporto tra prodotti, pratiche e prospettive?" },
+  { k:'cmp',  c:'Reflection',         q:"Se potessi cambiare una cosa nel modo in cui la comunità vive questo tema, che cosa cambieresti e perché?" }
 ];
 const QA_FRAME = [
   { h:'Say it', t:'One clear sentence that answers the question.' },
@@ -1357,8 +1434,11 @@ const QA_FRAME = [
 ];
 var QA = null;
 function qaNew(){
-  const info = shuffle(QA_BANK.filter(function(q){ return q.k === 'info'; })).slice(0, 3);
   const cmp = shuffle(QA_BANK.filter(function(q){ return q.k === 'cmp'; })).slice(0, 1);
+  const seen = {}, info = [];
+  shuffle(QA_BANK.filter(function(q){ return q.k === 'info'; })).forEach(function(q){
+    if (info.length < 3 && !seen[q.c]){ seen[q.c] = 1; info.push(q); }
+  });
   return { qs:shuffle(info.concat(cmp)), i:0, phase:'intro', stage:'listen', plays:0, showText:false, notes:['', '', '', ''], cmp:[false, false, false, false], urls:[], micMsg:'', micUrl:'', counted:false, graded:false };
 }
 function ttsOk(){ return ('speechSynthesis' in window) && (typeof SpeechSynthesisUtterance !== 'undefined'); }
@@ -1404,6 +1484,8 @@ function qaIntro(){
     h('h2', { style:'font-size:32px' }, 'Four questions. Forty seconds each.'),
     h('p', { style:'margin:0' }, 'This is the exam format. You hear each question at most twice. You can take notes. Then you record a 40-second answer. The recording runs the full 40 seconds, so keep talking. In at least one answer, make a cultural comparison or a reflection.'),
     h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'On exam day you need a wired headset with a microphone. Practice with yours. Recordings stay on this device, and you can download them for your teacher.'),
+    h('details', {}, h('summary', { class:'mono mute', style:'cursor:pointer' }, 'What kinds of questions can come?'),
+      h('p', { style:'font-size:14px;line-height:1.6' }, 'You cannot predict which. Practice every kind: clarification (explain what you meant), your research process, cultural products, practices and perspectives, personal reflection, opinion, evidence, follow-up, future, recommendation, emotion, problem solving, comparison, and the unexpected one. Questions also ask you to express a preference, give an opinion, recommend, explain, describe an emotion, predict, compare, or connect perspectives to products and practices.')),
     h('div', { class:'row' }, test), msg, out,
     h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ QA.phase = 'q'; QA.stage = 'listen'; QA.plays = 0; render(); } }, 'Start the four questions')),
     h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'These practice questions are generic project questions written for training, not College Board questions. Your real project topic arrives in January.'));
@@ -1459,7 +1541,7 @@ function qaSummary(){
   const anyCmp = QA.cmp.some(function(x){ return x; });
   const rows = QA.qs.map(function(q, i){
     return h('div', { class:'rev', style:'flex-direction:column;gap:6px' },
-      h('span', { class:'mono mute' }, 'Question ' + (i + 1)), h('span', {}, q.q),
+      h('span', { class:'mono mute' }, 'Question ' + (i + 1) + ' · ' + q.c), h('span', {}, q.q),
       h('audio', { controls:true, src:QA.urls[i], style:'width:100%' }),
       h('a', { class:'btn alt sm', href:QA.urls[i], download:'domanda-' + (i + 1) + '.webm', target:'_blank', rel:'noopener', style:'align-self:flex-start' }, 'Download for your teacher'));
   });
@@ -1509,12 +1591,23 @@ function viewParlato(){
    v2.9 SET: timed multiple-choice sets. Section II of the 2027 exam is 55 questions in 80 min:
    Listening 25 Q / 40 min (96 s per question) and Reading 30 Q / 40 min (80 s per question).
    No feedback during the set, a visible clock, results by question type afterwards.
-   Question types are this tool's own labels, not College Board's.
+   Question tags are official skill codes (1.A.1 to 1.C.3); the code given to each question is this tool's judgment.
    ============================================================ */
 const SET_RATE = { reading:80, listening:96 };
+/* Skill codes are the official 2027 interpretive-communication learning objectives (from the teacher-reference slides).
+   Which code each question gets is my own judgment, not College Board's. */
+const LO = {
+  '1.A.1':'Identify supporting or relevant details', '1.A.2':'Identify data points, patterns and trends',
+  '1.B.1':'Determine the main idea, theme or purpose', '1.B.2':'Determine the intended audience',
+  '1.B.3':'Determine point of view, perspective, tone or attitude', '1.B.4':'Identify organizing or rhetorical structures',
+  '1.B.5':'Determine the meaning of words and phrases from textual cues',
+  '1.C.1':'Connect information within or across sources', '1.C.2':'Synthesize meaning to draw logical conclusions', '1.C.3':'Infer implied meaning through context'
+};
+function loName(t){ return LO[t] ? t + ' · ' + LO[t] : t; }
 const MC_TAGS = {
-  p01:['main idea', 'detail', 'detail', 'vocabulary in context', 'inference', 'author\'s purpose'],
-  a01:['main idea', 'detail', 'detail', 'detail', 'author\'s purpose']
+  p01:['1.B.1', '1.A.2', '1.A.1', '1.B.5', '1.C.2', '1.B.1'],
+  a01:['1.B.1', '1.A.2', '1.A.1', '1.B.3', '1.A.1', '1.C.1'],
+  p02:['1.B.1', '1.A.2', '1.A.2', '1.B.3', '1.C.1']
 };
 var SETQ = null;
 function setNew(){ return { phase:'setup', kind:'reading', drafts:false, n:5, items:[], i:0, ans:[], deadline:0, allowed:0, iv:null, audio:{}, used:0, res:null }; }
@@ -1555,14 +1648,25 @@ function setFinish(){
   Q.phase = 'result';
   render();
 }
+function chartBlock(C){
+  const max = Math.max.apply(null, C.rows.map(function(r){ return r[1]; })) || 1;
+  return h('div', { class:'chart', role:'group', 'aria-label':C.title },
+    h('div', { class:'ct' }, C.title),
+    C.rows.map(function(r){ return h('div', { class:'cr' }, h('span', {}, r[0]), h('div', { class:'cb' }, h('div', { style:'width:' + Math.round(r[1] / max * 100) + '%' })), h('b', {}, r[1] + (C.unit || ''))); }),
+    C.note ? h('div', { class:'cn' }, C.note) : null);
+}
+function srcHead(X){
+  return h('div', {}, X.src ? h('div', { class:'mono', style:'color:#C8FF3D;font-size:11px' }, 'SOURCE TYPE · ' + X.src.toUpperCase()) : null,
+    X.intro ? h('div', { class:'mute', style:'font-size:13px;margin:4px 0' }, h('b', {}, 'Introduction: '), X.intro) : null);
+}
 function setPassage(it){
   const X = it.X, st = ex(X.id);
   if (SETQ.kind === 'listening'){
     if (!SETQ.audio[X.id] && AUDIO_URL[X.id]) SETQ.audio[X.id] = h('audio', { controls:true, src:AUDIO_URL[X.id], style:'width:100%' });
-    return SETQ.audio[X.id] ? h('div', {}, h('div', { class:'mono mute' }, 'Audio · ' + X.title), SETQ.audio[X.id]) : h('div', { class:'alert' }, 'No audio loaded for this exhibit.');
+    return SETQ.audio[X.id] ? h('div', { class:'card' }, srcHead(X), h('div', { class:'mono mute' }, 'Audio · ' + X.title), SETQ.audio[X.id], X.chart ? chartBlock(X.chart) : null) : h('div', { class:'alert' }, 'No audio loaded for this exhibit.');
   }
-  const paras = parasOf(st);
-  if (paras.length) return h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, X.title), h('div', { class:'body' }, paras.map(function(p){ return h('p', {}, p); })));
+  const paras = X.text ? X.text : parasOf(st);
+  if (paras.length) return h('div', { class:'stack' }, h('div', { class:'card' }, srcHead(X)), h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, X.title), h('div', { class:'body' }, paras.map(function(p){ return h('p', {}, p); }))), X.chart ? chartBlock(X.chart) : null);
   const ta = h('textarea', { 'aria-label':'Paste the article text', placeholder:'Paste the article text here…', style:'min-height:160px' });
   return h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, X.title),
     h('p', { style:'font-size:14px;color:#55535f;margin:0 0 8px' }, 'The article is not stored in this tool. Open the original, copy the text, and paste it here (it stays on this device).'),
@@ -1639,18 +1743,18 @@ function setResult(){
   const tags = Object.keys(R.byTag).sort(function(a, b){ return (R.byTag[a][0] / R.byTag[a][1]) - (R.byTag[b][0] / R.byTag[b][1]); });
   const bars = tags.map(function(t){
     const r = R.byTag[t], pct = Math.round(r[0] / r[1] * 100);
-    return h('div', { style:'margin:8px 0' }, h('div', { style:'display:flex;justify-content:space-between;font-size:14px' }, h('span', {}, t), h('span', { class:'mono mute' }, r[0] + ' / ' + r[1])),
+    return h('div', { style:'margin:8px 0' }, h('div', { style:'display:flex;justify-content:space-between;font-size:14px' }, h('span', {}, loName(t)), h('span', { class:'mono mute' }, r[0] + ' / ' + r[1])),
       h('div', { class:'bar' }, h('div', { style:'width:' + pct + '%' })));
   });
   const missed = Q.items.map(function(it, i){ return { it:it, i:i }; }).filter(function(x){ return Q.ans[x.i] !== x.it.a; }).map(function(x){
     const correct = x.it.o.find(function(o){ return o.i === x.it.a; });
-    return h('div', { class:'rev', style:'flex-direction:column;gap:4px' }, h('span', { class:'mono mute' }, 'Question ' + (x.i + 1) + ' · ' + x.it.tag + (Q.ans[x.i] === null ? ' · no answer' : '')),
+    return h('div', { class:'rev', style:'flex-direction:column;gap:4px' }, h('span', { class:'mono mute' }, 'Question ' + (x.i + 1) + ' · ' + loName(x.it.tag) + (Q.ans[x.i] === null ? ' · no answer' : '')),
       h('span', {}, x.it.q), h('span', { style:'color:#3DDC84' }, 'Correct: ' + correct.t), h('span', { class:'mute' }, x.it.why));
   });
   return h('div', { class:'card' },
     h('div', { class:'mono mute' }, 'Set finished · ' + (Q.kind === 'reading' ? 'Lettura' : 'Ascolto') + ' · time used ' + fmtClock(Q.used) + ' of ' + fmtClock(Q.allowed)),
     h('div', { class:'bigscore' }, R.right, h('span', { style:'font-size:28px;color:#A9A6B4' }, ' / ' + R.total)),
-    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'By question type, weakest first. Question types are this tool\'s own labels. Fix the top one before the next set.'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'By question type, weakest first. Codes are the official interpretive skills; which code a question carries is the tool\'s judgment. Fix the top one before the next set.'),
     bars,
     missed.length ? h('div', {}, h('div', { class:'mono mute', style:'margin-bottom:6px' }, 'What you missed'), missed) : h('p', {}, 'No misses.'),
     h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ SETQ = setNew(); render(); } }, 'Another set'), h('a', { class:'btn ghost', href:'#/' }, 'Back to today')));
@@ -1774,6 +1878,221 @@ function viewPpr(){
 }
 
 /* ============================================================
+   v3.2 SAGGIO: Q3 argumentative essay. Exam facts (2027 teacher reference): 3 sources (print + audio), the audio plays twice,
+   55 minutes for everything, typed in Bluebook, 15% of the score, not tied to the project, any unit.
+   Scored on: a clearly stated position; evidence from all three sources, identified; claims explained with evidence;
+   logical organization and transitions; varied vocabulary, structures, expressions.
+   Not confirmed: how many of the three sources are print vs audio, and any word-length requirement. The sample packet is original text
+   with invented data. The audio is read by the browser's text-to-speech, which is NOT authentic audio. Real packets can be pasted in (they stay on this device).
+   ============================================================ */
+const ESSAY_MIN = 55;
+const ESSAY_SAMPLE = {
+  name:'Sample packet · Identità e social (original text, invented data)',
+  prompt:"I social network aiutano i giovani a costruire la propria identità o la limitano? Scrivi un saggio argomentativo in cui sostieni la tua posizione. Usa le informazioni di tutte e tre le fonti e identificale nel tuo saggio.",
+  s1:{ title:"«Ragazzi online: la vetrina e lo specchio»", by:"Giulia Ferrante, giornalista · articolo (testo originale, dati inventati)", text:[
+    "Per molti adolescenti i social sono una vetrina dove mostrare chi sono. Una ricerca condotta in sei licei del Nord Italia rivela che il 64% dei ragazzi dice di sentirsi più libero di esprimersi online che a scuola.",
+    "Tuttavia, una studentessa intervistata ammette: «Prima di pubblicare una foto, controllo quanti amici la guarderanno. Se penso che piaccia poco, non la pubblico».",
+    "Secondo l'autrice, i social offrono spazio per sperimentare, ma il bisogno di approvazione può trasformare l'espressione personale in una gara di popolarità."] },
+  s2:{ title:"Grafico: «Perché usi i social?»", by:"Indagine su ragazzi di 14–18 anni · risposte multiple (dati inventati)", chart:{ title:'Perché usi i social? (%)', unit:'%', rows:[['Amici',81],['Passioni',58],['Moda e influencer',47],['Mostrare i miei lavori',39],['Meno solo/a',33]], note:'Amici = mantenere i contatti con gli amici · Passioni = scoprire interessi e passioni' } },
+  s3:{ title:"Fonte audio", by:"Marco Bellini, psicologo · intervista radiofonica (testo originale)", transcript:"Nella mia esperienza con gli adolescenti, i social non sono né buoni né cattivi. Ho conosciuto un ragazzo timido che, grazie a un canale di musica, ha trovato amici con le sue stesse passioni, e questo lo ha aiutato molto. Ma ho conosciuto anche ragazze che si confrontano continuamente con foto perfette e si sentono inadeguate. La differenza, secondo me, è come li usiamo: se i social diventano uno spazio per condividere interessi, aiutano l'identità; se diventano uno specchio dove cercare solo approvazione, la limitano. Per questo la scuola dovrebbe insegnare un uso consapevole." },
+  pats:[/ferrante|fonte\s*1|prima fonte|primo (articolo|testo)|vetrina/i, /grafico|fonte\s*2|seconda fonte|81\s*%|58\s*%|47\s*%|39\s*%|33\s*%|per cento/i, /bellini|psicolog|fonte\s*3|terza fonte|intervista|audio/i],
+  model:{
+    thesis:"I social network aiutano i giovani a costruire la propria identità solo quando diventano uno spazio per condividere interessi, e la limitano quando si riducono alla ricerca di approvazione.",
+    outline:["Fonte 3 (Bellini, audio): un ragazzo timido trova amici grazie a un canale di musica → i social possono aiutare.","Fonte 2 (grafico): il 58% scopre interessi e passioni e il 39% mostra i propri lavori, ma il 47% segue moda e influencer → gli usi creativi esistono, però non sono gli unici.","Fonte 1 (Ferrante): il 64% si sente più libero online, ma la studentessa non pubblica se pensa che piaccia poco → l'approvazione può limitare."]
+  }
+};
+const ESSAY_CONN = ['inoltre', 'tuttavia', 'quindi', 'perciò', 'infatti', 'per esempio', 'ad esempio', 'invece', 'in conclusione', 'd\'altra parte', 'secondo', 'anche se', 'nonostante', 'pertanto', 'di conseguenza', 'mentre', 'sebbene', 'in primo luogo', 'infine'];
+var ESSAY_IV = null;
+function essayStore(){
+  S.essay = S.essay || {};
+  const E = S.essay;
+  if (!E.phase) E.phase = 'intro';
+  if (!E.mode) E.mode = 'sample';
+  E.notes = E.notes || ['', '', ''];
+  E.outline = E.outline || ['', '', ''];
+  E.thesis = E.thesis || ''; E.text = E.text || ''; E.plays = E.plays || 0;
+  E.cp = E.cp || { prompt:'', s1:'', s2:'', s3:'' };
+  return E;
+}
+function essayPacket(E){
+  if (E.mode === 'sample') return ESSAY_SAMPLE;
+  function paras(t){ return (t || '').split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean); }
+  return { name:'Your packet', prompt:E.cp.prompt,
+    s1:{ title:'Fonte 1', by:'', text:paras(E.cp.s1) }, s2:{ title:'Fonte 2', by:'', text:paras(E.cp.s2) },
+    s3:{ title:'Fonte 3 (audio)', by:'', transcript:(E.cp.s3 || '').trim() },
+    pats:[/fonte\s*1|prima fonte|primo (articolo|testo)/i, /fonte\s*2|seconda fonte|grafico/i, /fonte\s*3|terza fonte|audio|intervista/i], model:null };
+}
+function essayReset(E){
+  E.phase = 'intro'; E.notes = ['', '', '']; E.outline = ['', '', '']; E.thesis = ''; E.text = ''; E.plays = 0; E.start = 0; E.deadline = 0; E.used = 0; E.graded = false;
+  save();
+}
+function essayTimer(){
+  if (ESSAY_IV) return;
+  ESSAY_IV = setInterval(function(){
+    const E = S.essay;
+    if (!E || E.phase !== 'work'){ clearInterval(ESSAY_IV); ESSAY_IV = null; return; }
+    const left = Math.ceil((E.deadline - Date.now()) / 1000);
+    const el = document.getElementById('essay-timer');
+    if (el) el.textContent = fmtClock(left);
+    if (left <= 0) essayEnd();
+  }, 1000);
+}
+function essayFinalize(E){
+  if (ESSAY_IV){ clearInterval(ESSAY_IV); ESSAY_IV = null; }
+  E.used = Math.min(ESSAY_MIN * 60, Math.max(0, Math.round((Date.now() - E.start) / 1000)));
+  E.phase = 'review'; save();
+}
+function essayEnd(){ essayFinalize(essayStore()); render(); }
+function essayChecks(E, P){
+  const t = E.text || '', low = t.toLowerCase();
+  const conn = ESSAY_CONN.filter(function(c){ return low.indexOf(c) >= 0; });
+  const rows = [
+    { ok:(E.thesis || '').trim().length >= 25, t:'A position written in the thesis box' },
+    { ok:P.pats[0].test(t), t:'Fonte 1 named or clearly cited' },
+    { ok:P.pats[1].test(t), t:'Fonte 2 named or clearly cited' },
+    { ok:P.pats[2].test(t), t:'Fonte 3 named or clearly cited' },
+    { ok:conn.length >= 4, t:'Connectors: ' + conn.length + ' different (aim for 4 or more)' }
+  ];
+  return rows;
+}
+function essayChecksPanel(E, P){
+  const box = h('div', { class:'hlpanel' });
+  function paint(){
+    box.replaceChildren.apply(box, [h('div', { class:'mono mute' }, 'Quick checks · not a score · your teacher grades the real thing')].concat(
+      essayChecks(E, P).map(function(r){ return h('div', { style:'margin-top:6px;font-size:14px;color:' + (r.ok ? '#3DDC84' : '#A9A6B4') }, (r.ok ? '✓ ' : '○ ') + r.t); })));
+  }
+  paint();
+  box.paint = paint;
+  return box;
+}
+function essayIntro(E){
+  const chip = function(k, l){ return h('button', { class:'chip' + (E.mode === k ? ' on' : ''), 'aria-pressed':String(E.mode === k), onclick:function(){ E.mode = k; save(); render(); } }, l); };
+  let custom = null;
+  if (E.mode === 'custom'){
+    function box(k, label, ph){
+      const ta = h('textarea', { 'aria-label':label, placeholder:ph, style:'min-height:90px' });
+      ta.value = E.cp[k]; ta.addEventListener('input', function(){ E.cp[k] = ta.value; save(); });
+      return h('div', { class:'field' }, h('label', {}, label), ta);
+    }
+    custom = h('div', { class:'stack', style:'gap:10px' },
+      h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Paste a packet your teacher gives you. It stays on this device. The audio source is read aloud by your device\'s voice from the transcript you paste, which is not authentic audio.'),
+      box('prompt', 'The prompt', 'Paste the essay prompt'), box('s1', 'Fonte 1 (text)', 'Paste source 1'), box('s2', 'Fonte 2 (text or description of the chart)', 'Paste source 2'), box('s3', 'Fonte 3 (transcript of the audio)', 'Paste the transcript'));
+  }
+  const ready = E.mode === 'sample' || (E.cp.prompt.trim() && E.cp.s1.trim() && E.cp.s2.trim() && E.cp.s3.trim());
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Saggio · Q3 · argumentative essay · 15% of the exam'),
+    h('h2', { style:'font-size:32px' }, 'Take a position. Prove it with all three sources.'),
+    h('p', { style:'margin:0' }, 'On the exam you get three sources (print and audio) on a topic that is NOT your project. The audio plays twice. You have 55 minutes for everything: reading, listening, planning, and typing the essay.'),
+    h('div', { class:'hlpanel' }, h('div', { class:'mono mute' }, 'What is scored'),
+      DESCRIPTORS[2].items.map(function(t){ return h('div', { style:'margin-top:6px;font-size:14px' }, '• ' + t); })),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'The trap: summarizing each source. An essay that only reports what the sources say is not arguing. State your position first, then use each source as evidence for it.'),
+    h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, chip('sample', 'SAMPLE PACKET'), chip('custom', 'MY OWN PACKET')),
+    E.mode === 'sample' ? h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'One sample packet only. Original text, invented numbers, audio read by text-to-speech. Repeating it teaches the routine, not new content. Paste real packets under MY OWN PACKET.') : null,
+    custom,
+    h('div', { class:'row' }, h('button', { class:'btn', disabled:!ready, onclick:function(){ essayReset(E); E.phase = 'work'; E.start = Date.now(); E.deadline = E.start + ESSAY_MIN * 60000; save(); render(); } }, 'Start the 55 minutes')),
+    h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'The clock keeps running if you leave the page. Which of the three sources are print and which are audio has not been confirmed for Italian. Neither has a word-length requirement.'));
+}
+function essayWork(E){
+  const P = essayPacket(E);
+  essayTimer();
+  const timer = h('span', { id:'essay-timer', class:'mono', style:'font-size:22px;color:#C8FF3D' }, fmtClock(Math.ceil((E.deadline - Date.now()) / 1000)));
+  const status = h('div', { class:'card', style:'flex-direction:row;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5' }, h('span', { class:'mono mute' }, 'Saggio · 55 minutes in total'), timer);
+  /* sources */
+  const s1 = h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, 'FONTE 1 · ' + P.s1.title), P.s1.by ? h('div', { style:'font-size:12px;color:#55535f' }, P.s1.by) : null, h('div', { class:'body' }, P.s1.text.map(function(x){ return h('p', {}, x); })));
+  const s2 = P.s2.chart ? h('div', { class:'stack' }, h('div', { class:'mono mute' }, 'FONTE 2 · ' + P.s2.title + (P.s2.by ? ' · ' + P.s2.by : '')), chartBlock(P.s2.chart))
+    : h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, 'FONTE 2 · ' + P.s2.title), h('div', { class:'body' }, P.s2.text.map(function(x){ return h('p', {}, x); })));
+  const playBtn = h('button', { class:'btn', disabled:E.plays >= 2 || !ttsOk() });
+  function paintPlay(){ playBtn.textContent = E.plays >= 2 ? 'Played twice' : 'Play the audio (' + E.plays + ' / 2)'; if (E.plays >= 2 || !ttsOk()) playBtn.setAttribute('disabled', ''); }
+  paintPlay();
+  playBtn.addEventListener('click', function(){ if (E.plays >= 2) return; E.plays++; save(); speakIt(P.s3.transcript); paintPlay(); });
+  const s3 = h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'FONTE 3 · ' + P.s3.title + (P.s3.by ? ' · ' + P.s3.by : '')),
+    ttsOk() ? h('div', { class:'row' }, playBtn) : h('div', { class:'alert' }, 'This device has no text-to-speech, so the transcript is shown instead. Listening practice is lost; the essay practice still works.'),
+    ttsOk() ? h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'Exam rule: two plays only. Take notes below while it plays. If the voice sounds English, your device has no Italian voice.') : h('p', { style:'font-size:15px;line-height:1.6' }, P.s3.transcript));
+  /* organizer */
+  function area(arr, i, label, hint, rows){
+    const ta = h('textarea', { 'aria-label':label, placeholder:hint, style:'min-height:' + (rows || 80) + 'px' });
+    ta.value = arr[i] || '';
+    ta.addEventListener('input', function(){ arr[i] = ta.value; save(); });
+    return h('div', { class:'field' }, h('label', {}, label), ta);
+  }
+  const organizer = h('div', { class:'card' },
+    h('h2', { style:'font-size:24px' }, '1 · Notes: what does each source say, and what can I cite?'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'For each source: its point of view, plus one number, quote or example you can cite. Write which source it comes from.'),
+    area(E.notes, 0, 'Fonte 1', 'Point of view. Evidence to cite.'), area(E.notes, 1, 'Fonte 2', 'Point of view. Numbers to cite.'), area(E.notes, 2, 'Fonte 3 (audio)', 'Point of view. Evidence to cite.'));
+  const thesis = h('textarea', { 'aria-label':'My position', placeholder:'Secondo me, … perché …', style:'min-height:70px' });
+  thesis.value = E.thesis;
+  const checks = essayChecksPanel(E, P);
+  thesis.addEventListener('input', function(){ E.thesis = thesis.value; save(); checks.paint(); });
+  const plan = h('div', { class:'card' },
+    h('h2', { style:'font-size:24px' }, '2 · My position and plan'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'One sentence that answers the prompt and takes a side. Then one paragraph per source, each proving your position.'),
+    h('div', { class:'field' }, h('label', {}, 'My position'), thesis),
+    area(E.outline, 0, 'Paragraph 1', 'Claim + source + evidence + why it proves my position', 70), area(E.outline, 1, 'Paragraph 2', 'Claim + source + evidence + why it proves my position', 70), area(E.outline, 2, 'Paragraph 3', 'Claim + source + evidence + why it proves my position', 70));
+  const wc = h('span', { class:'mono mute' });
+  const essay = h('textarea', { id:'essay-text', 'aria-label':'Essay', placeholder:'Scrivi il tuo saggio qui. Typing accents: à è é ì ò ù.', style:'min-height:340px' });
+  essay.value = E.text;
+  function paintWc(){ wc.textContent = wordCount(essay.value) + ' words'; }
+  essay.addEventListener('input', function(){ E.text = essay.value; save(); paintWc(); checks.paint(); });
+  paintWc();
+  const write = h('div', { class:'card' },
+    h('h2', { style:'font-size:24px' }, '3 · Write the essay'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Open with your position. Name each source when you use it («Secondo Ferrante…», «Il grafico mostra…», «Nell\'intervista, Bellini…»). Explain how each piece of evidence supports your side. Close by returning to your position.'),
+    essay, wc, checks,
+    h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ if (wordCount(E.text) < 30 && !confirm('The essay is very short. Submit anyway?')) return; essayEnd(); } }, 'Submit the essay')));
+  return h('div', { class:'stack' }, status,
+    h('div', { class:'card' }, h('div', { class:'mono mute' }, 'THE PROMPT'), h('div', { style:'font-size:17px;line-height:1.5' }, P.prompt)),
+    s1, s2, s3, organizer, plan, write);
+}
+function essayReview(E){
+  const P = essayPacket(E);
+  const checks = essayChecks(E, P);
+  const items = DESCRIPTORS[2].items;
+  const sel = new Array(items.length).fill(null);
+  const rec = h('button', { class:'btn', disabled:true }, 'Record my teacher\'s result');
+  function chk(){ if (sel.every(function(v){ return v !== null; })) rec.removeAttribute('disabled'); else rec.setAttribute('disabled', ''); }
+  rec.addEventListener('click', function(){
+    if (rec.hasAttribute('disabled')) return;
+    S.skills = S.skills || {};
+    let cleared = false;
+    items.forEach(function(t, k){ const key = '2-' + k, n = S.skills[key] || 0; S.skills[key] = sel[k] ? n + 1 : 0; if (sel[k] && n + 1 === 3) cleared = true; });
+    E.graded = true; save(); render(); knock(); if (cleared) burst();
+  });
+  const crit = items.map(function(t, k){
+    const yes = h('button', { class:'chip', 'aria-pressed':'false' }, 'SOLID');
+    const no = h('button', { class:'chip', 'aria-pressed':'false' }, 'NEEDS WORK');
+    function paint(){ yes.classList.toggle('on', sel[k] === true); no.classList.toggle('on', sel[k] === false); yes.setAttribute('aria-pressed', String(sel[k] === true)); no.setAttribute('aria-pressed', String(sel[k] === false)); }
+    yes.addEventListener('click', function(){ sel[k] = true; paint(); chk(); });
+    no.addEventListener('click', function(){ sel[k] = false; paint(); chk(); });
+    return h('div', { class:'crit' }, h('span', {}, t), h('span', { class:'cb' }, yes, no));
+  });
+  const fileText = 'SAGGIO\n' + (P.prompt || '') + '\n\nPosition: ' + E.thesis + '\n\n' + E.text + '\n';
+  const url = URL.createObjectURL(new Blob([fileText], { type:'text/plain;charset=utf-8' }));
+  const copyBtn = h('button', { class:'btn alt sm', onclick:function(){ copyText(fileText, function(ok){ copyBtn.textContent = ok ? 'Copied' : 'Copy failed'; }); } }, 'Copy the essay');
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Saggio finished · time used ' + fmtClock(E.used || 0) + ' of ' + ESSAY_MIN + ':00 · ' + wordCount(E.text) + ' words'),
+    h('h2', { style:'font-size:32px' }, 'Your essay.'),
+    h('div', { class:'hlpanel', style:'white-space:pre-wrap;line-height:1.55' }, E.text || '(empty)'),
+    h('div', { class:'hlpanel' }, h('div', { class:'mono mute' }, 'Quick checks · not a score'), checks.map(function(r){ return h('div', { style:'margin-top:6px;font-size:14px;color:' + (r.ok ? '#3DDC84' : '#FFC83D') }, (r.ok ? '✓ ' : '○ ') + r.t); })),
+    h('div', { class:'row' }, h('a', { class:'btn alt sm', href:url, download:'saggio.txt' }, 'Download for your teacher'), copyBtn),
+    P.model ? h('details', {}, h('summary', { class:'mono mute', style:'cursor:pointer' }, 'Compare with a model position and plan'),
+      h('div', { class:'hlpanel' }, h('div', { class:'mono', style:'color:#FFC83D' }, 'Model position'), h('p', { style:'margin:6px 0' }, P.model.thesis),
+        h('div', { class:'mono', style:'color:#FFC83D' }, 'Model plan'), P.model.outline.map(function(o){ return h('p', { style:'margin:6px 0;font-size:15px' }, '• ' + o); }))) : null,
+    h('details', {}, h('summary', { class:'mono mute', style:'cursor:pointer' }, 'Check against the audio script'), h('p', { style:'font-size:15px;line-height:1.6' }, P.s3.transcript)),
+    E.graded ? h('p', { class:'mute' }, 'Result recorded. See your Skills tab.') : h('div', { class:'stack', style:'gap:10px' },
+      h('h2', { style:'font-size:22px' }, 'When your teacher has graded it'),
+      h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Enter what she told you for each skill. SOLID only if she said it was strong. A skill clears after three SOLID results in a row, and any NEEDS WORK resets it.'),
+      crit, h('div', { class:'row' }, rec)),
+    h('div', { class:'row' }, h('button', { class:'btn alt', onclick:function(){ essayReset(E); render(); } }, 'Start over'), h('a', { class:'btn ghost', href:'#/' }, 'Back to today')));
+}
+function viewSaggio(){
+  const E = essayStore();
+  if (E.phase === 'work' && E.deadline && Date.now() >= E.deadline) essayFinalize(E);
+  const body = E.phase === 'intro' ? essayIntro(E) : (E.phase === 'work' ? essayWork(E) : essayReview(E));
+  return h('main', {}, h('div', { style:'margin:10px 0 16px' }, h('a', { href:'#/', class:'mono', style:'text-decoration:none' }, '← Today')), body);
+}
+
+/* ============================================================
    ROUTER
    ============================================================ */
 function render(){
@@ -1786,6 +2105,7 @@ function render(){
   else if (route === '/parlato') view = viewParlato();
   else if (route === '/set') view = viewSet();
   else if (route === '/ppr') view = viewPpr();
+  else if (route === '/saggio') view = viewSaggio();
   else if (route === '/archivio') view = viewArchivio();
   else view = viewOggi();
   app.replaceChildren.apply(app, topbar().concat([tabs(), view]).filter(Boolean));
