@@ -629,6 +629,87 @@ function ring(pct, color, trackColor, textColor){
 /* ============================================================
    VIEW: OGGI
    ============================================================ */
+/* ============================================================
+   v3.5 THIS WEEK: the 26-week plan on the home screen. Week 1 starts Monday 2 Nov 2026; the PPR is due Fri 30 Apr 2027 (week 26); the exam is Mon 3 May 2027.
+   Phases: A Foundations wk 1-9, B Project research wk 10-16, C Build and rehearse wk 17-24, D Final push wk 25-26.
+   The January project packet date and class periods are the teacher's; adjust phases B and C when known. Counters are self-reported and stored on this device.
+   ============================================================ */
+const WEEK0 = new Date(2026, 10, 2);
+const WEEK_PHASES = {
+  A:{ name:'Foundations', items:[
+    { k:'qa', n:3, t:'Q&A speaking sets (4 questions, the full 40 s)', href:'#/parlato' },
+    { k:'li', n:5, t:'Days of 10 min of real Italian audio, with notes' },
+    { k:'set', n:1, t:'Timed multiple-choice set', href:'#/set' },
+    { k:'ess', n:1, t:'Argumentative essay (every second week)', href:'#/saggio', odd:true },
+    { k:'ppr', n:1, t:'PPR practice: compress a text into 7 boxes', href:'#/ppr' },
+    { k:'mus', n:5, t:'Music-bank entries: a product, a practice, a perspective' } ] },
+  B:{ name:'Project research', items:[
+    { k:'qa', n:3, t:'Q&A speaking sets', href:'#/parlato' },
+    { k:'pres', n:1, t:'Q1 presentation practice', href:'#/presentazione' },
+    { k:'proj', n:3, t:'Project work sessions with the packet sources' },
+    { k:'set', n:2, t:'Timed multiple-choice sets', href:'#/set' },
+    { k:'ess', n:1, t:'Argumentative essay (every second week)', href:'#/saggio', odd:true },
+    { k:'ppr', n:1, t:'Work on your PPR draft', href:'#/ppr' },
+    { k:'li', n:3, t:'Days of real Italian audio, with notes' } ] },
+  C:{ name:'Build and rehearse', items:[
+    { k:'pres', n:2, t:'Q1 presentations from your PPR', href:'#/presentazione' },
+    { k:'qa', n:3, t:'Q&A sets, with questions about your own project', href:'#/parlato' },
+    { k:'set', n:2, t:'Timed multiple-choice sets', href:'#/set' },
+    { k:'ess', n:1, t:'Argumentative essay (every second week)', href:'#/saggio', odd:true },
+    { k:'ppr', n:1, t:'Revise your PPR (editable until 30 April)', href:'#/ppr' },
+    { k:'li', n:3, t:'Days of real Italian audio, with notes' } ] },
+  D:{ name:'Final push', items:[
+    { k:'pres', n:2, t:'Q1 presentations from your PPR', href:'#/presentazione' },
+    { k:'qa', n:2, t:'Q&A sets', href:'#/parlato' },
+    { k:'set', n:1, t:'Timed multiple-choice set', href:'#/set' },
+    { k:'mock', n:1, t:'Full mock of one section in exam conditions' } ] }
+};
+function weekInfo(){
+  const now = new Date(), day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((day0 - WEEK0) / 86400000);
+  const n = Math.floor(days / 7) + 1;
+  const dow = (days % 7 + 7) % 7;
+  let phase = null;
+  if (n >= 1 && n <= 9) phase = 'A'; else if (n >= 10 && n <= 16) phase = 'B'; else if (n >= 17 && n <= 24) phase = 'C'; else if (n >= 25 && n <= 26) phase = 'D';
+  return { n:n, dow:dow, phase:phase, start:new Date(WEEK0.getTime() + (n - 1) * 7 * 86400000) };
+}
+function weekItems(W){
+  if (!W.phase) return [];
+  const items = WEEK_PHASES[W.phase].items.filter(function(it){ return !it.odd || W.n % 2 === 1; });
+  if (W.n === 26) items.push({ k:'ppr30', n:1, t:'Submit your PPR in the AP Digital Portfolio by Fri 30 April, 11:59 pm ET', href:'#/ppr' });
+  return items;
+}
+function weekCard(){
+  const W = weekInfo();
+  const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  if (W.n < 1) return h('div', { class:'card' }, h('div', { class:'mono mute' }, 'The 26-week plan'), h('div', { style:'font-size:16px' }, 'Week 1 starts Monday 2 November 2026.'));
+  if (W.n > 26) return h('div', { class:'card acid' }, h('div', { class:'mono' }, 'Exam week'), h('div', { class:'big' }, 'Mon 3 May 2027, afternoon.'), h('div', { class:'mute' }, 'Headset charged. Bluebook open. Light review only.'));
+  S.week = S.week || {};
+  const rec = S.week[W.n] = S.week[W.n] || {};
+  const items = weekItems(W);
+  const total = items.reduce(function(a, it){ return a + it.n; }, 0);
+  const done = items.reduce(function(a, it){ return a + Math.min(rec[it.k] || 0, it.n); }, 0);
+  const pct = total ? Math.round(done / total * 100) : 0;
+  const expected = Math.round((W.dow + 1) / 7 * 100);
+  const status = pct >= 100 ? 'Week complete.' : (pct + 15 >= expected ? 'On pace for ' + ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][W.dow] + '.' : 'Behind pace: ' + pct + '% done, about ' + expected + '% expected by today.');
+  const rows = items.map(function(it){
+    const c = rec[it.k] || 0, ok = c >= it.n;
+    const minus = h('button', { class:'chip', 'aria-label':'Minus one: ' + it.t, onclick:function(){ rec[it.k] = Math.max(0, c - 1); save(); render(); } }, '−');
+    const plus = h('button', { class:'chip', 'aria-label':'Plus one: ' + it.t, onclick:function(){ rec[it.k] = Math.min(it.n + 3, c + 1); save(); render(); } }, '+');
+    return h('div', { style:'display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:10px' },
+      h('div', { style:'flex:1;min-width:200px;font-size:15px;' + (ok ? 'color:#3DDC84' : '') }, (ok ? '✓ ' : '') + it.t, it.href ? h('a', { href:it.href, style:'margin-left:8px;font-size:13px' }, 'open ›') : null),
+      h('div', { style:'display:flex;gap:6px;align-items:center' }, minus, h('span', { class:'mono', style:'min-width:44px;text-align:center' }, c + ' / ' + it.n), plus));
+  });
+  return h('div', { class:'card' },
+    h('div', { style:'display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px' },
+      h('h2', { style:'font-size:24px' }, 'This week · week ' + W.n + ' of 26'), h('span', { class:'mono mute' }, 'Phase ' + W.phase + ' · ' + WEEK_PHASES[W.phase].name)),
+    h('div', { class:'mono mute', style:'font-size:12px' }, 'Week of ' + MON[W.start.getMonth()] + ' ' + W.start.getDate()),
+    h('div', { class:'bar', role:'progressbar', 'aria-valuenow':String(pct), 'aria-valuemin':'0', 'aria-valuemax':'100' }, h('div', { style:'width:' + pct + '%' })),
+    h('div', { style:'font-size:14px;margin-top:6px' }, status),
+    rows,
+    h('p', { class:'mute', style:'margin:8px 0 0;font-size:12px' }, 'You count your own work; be honest. Dates assume the project packet arrives in January.'));
+}
+
 function viewOggi(){
   const streak = streakNow(), filed = filedList().length, hasName = (S.student || '').trim();
   const next = EXHIBITS.find(function(X){ return live(X) && !ex(X.id).filed; });
@@ -683,6 +764,7 @@ function viewOggi(){
       h('div', { class:'streak' + (streak ? '' : ' cold'), 'aria-label':'Streak ' + streak }, svg(BOLT), streak, h('span', { class:'mono mute', style:'font-size:10px' }, streak === 1 ? 'DAY' : 'DAYS'))),
     h('div', { class:'stack' },
       hero,
+      weekCard(),
       h('div', { class:'card' },
         h('div', { class:'mono mute' }, 'Parlato · Q2 · 15% of the exam'),
         h('div', { style:'font-size:16px' }, 'Q1: a presentation from your PPR, 3 minutes to prepare, 3 to talk. Q2: four unseen questions, 40 seconds each. Train with your headset.'),
