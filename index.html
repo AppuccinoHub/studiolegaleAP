@@ -126,6 +126,12 @@ textarea:focus{border-color:var(--acid);outline:0}
 .bigscore{font-family:var(--display);font-weight:800;font-size:72px;line-height:1;letter-spacing:-.04em}
 .rev{display:flex;gap:12px;padding:12px 0;border-top:2px solid var(--line);font-size:14px}
 .opt.sel{border-color:var(--acid);color:var(--acid)}
+.pprprint{display:none}
+@media print{
+  body *{visibility:hidden}
+  .pprprint,.pprprint *{visibility:visible}
+  .pprprint{display:block;position:absolute;left:0;top:0;width:100%;background:#fff;color:#000;padding:24px}
+}
 .crit{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-top:2px solid var(--line);font-size:14px}
 .crit .cb{display:flex;gap:8px}
 .rev .m{font-family:var(--mono);font-weight:700;width:22px;flex-shrink:0}
@@ -496,7 +502,7 @@ function tabs(){
   const inProva = r.indexOf('/prova/') === 0 || r === '/udienza' || r === '/set';
   return h('nav', { class:'tabs', 'aria-label':'Main' },
     t('#/', 'Oggi', 'o', '<path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>', r === '/' || r === '' || inProva),
-    t('#/parlato', 'Parlato', 'p', '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 12a6 6 0 0 0 12 0h-2a4 4 0 0 1-8 0zm5 6.9V21h2v-2.1z"/>', r === '/parlato'),
+    t('#/parlato', 'Parlato', 'p', '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 12a6 6 0 0 0 12 0h-2a4 4 0 0 1-8 0zm5 6.9V21h2v-2.1z"/>', r === '/parlato' || r === '/ppr'),
     t('#/skills', 'Skills', 's', '<rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="5" width="4" height="15" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/>', r === '/skills'),
     t('#/archivio', 'Archivio', 'a', '<path d="M3 6h7l2 2h9v11H3z"/>', r === '/archivio'));
 }
@@ -579,7 +585,7 @@ function viewOggi(){
       h('div', { class:'card' },
         h('div', { class:'mono mute' }, 'Parlato · Q2 · 15% of the exam'),
         h('div', { style:'font-size:16px' }, 'Four unseen questions, 40 seconds each. Train the exam format with your headset.'),
-        h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/parlato' }, 'Open the speaking drill'))),
+        h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/parlato' }, 'Open the speaking drill'), h('a', { class:'btn alt', href:'#/ppr' }, 'Build my PPR'))),
       h('div', { class:'card' },
         h('div', { class:'mono mute' }, 'Set · multiple choice · 50% of the exam'),
         h('div', { style:'font-size:16px' }, 'Timed listening and reading questions under the real clock, with results by question type.'),
@@ -1657,6 +1663,117 @@ function viewSet(){
 }
 
 /* ============================================================
+   v3.0 PPR BUILDER: Personalized Project Reference = 7 boxes of at most 10 words (limits from the teacher; the College Board
+   slide says only "word- or character-limited outline", so confirm in the course document). Words are counted as
+   space-separated tokens. Every PPR must show a product, a practice and a perspective.
+   The PPR is typed into the AP Digital Portfolio by the student by 30 April; this tool only helps her draft and print it.
+   ============================================================ */
+const PPR_BOXES = 7, PPR_WORDS = 10;
+const PPR_TAGS = [{ k:'product', l:'PRODUCT' }, { k:'practice', l:'PRACTICE' }, { k:'perspective', l:'PERSPECTIVE' }, { k:'other', l:'OTHER' }];
+const PPR_SAMPLE = {
+  title:'Practice topic: Italian music and identity (invented practice text, not your real project)',
+  text:"Il Festival di Sanremo è una gara di canzoni che si tiene ogni anno a Sanremo, in Liguria, dal 1951. Per molti italiani è un rito familiare: si guarda in televisione insieme e si discute dei cantanti il giorno dopo. Il festival mostra una prospettiva importante: la canzone è un modo di raccontare l'identità del paese. Anche i cantautori, come Fabrizio De André, usano le parole per parlare di temi sociali. Negli Stati Uniti, invece, i grandi eventi musicali sono spesso concerti con biglietto, e non programmi che riuniscono tutta la famiglia.",
+  model:[
+    { t:'Introduzione: Festival di Sanremo, musica e identità italiana', tag:'other' },
+    { t:'Prodotto: gara di canzoni dal 1951, Liguria', tag:'product' },
+    { t:'Pratica: famiglia guarda la TV insieme', tag:'practice' },
+    { t:'Pratica: discutere i cantanti il giorno dopo', tag:'practice' },
+    { t:'Prospettiva: la canzone racconta l\'identità del paese', tag:'perspective' },
+    { t:'Prodotto: cantautori, De André, temi sociali', tag:'product' },
+    { t:'Confronto USA: concerti con biglietto, non famiglia', tag:'other' }
+  ]
+};
+var PPRMODE = 'practice';
+var PPRSHOW = false;
+function pprStore(){
+  S.ppr = S.ppr || {};
+  ['practice', 'mine'].forEach(function(k){
+    if (!S.ppr[k] || S.ppr[k].length !== PPR_BOXES) S.ppr[k] = Array.from({ length:PPR_BOXES }, function(){ return { t:'', tag:'' }; });
+  });
+  S.ppr.prompt = S.ppr.prompt || '';
+  return S.ppr;
+}
+function pprCheck(boxes){
+  const out = [];
+  const used = boxes.filter(function(b){ return wordCount(b.t) > 0; }).length;
+  ['product', 'practice', 'perspective'].forEach(function(k){
+    if (!boxes.some(function(b){ return b.tag === k && wordCount(b.t) > 0; })) out.push('No ' + k.toUpperCase() + ' box yet. Every PPR needs one.');
+  });
+  if (boxes.some(function(b){ return wordCount(b.t) > 0 && !b.tag; })) out.push('Tag every box you filled.');
+  if (used < PPR_BOXES) out.push(used + ' of ' + PPR_BOXES + ' boxes used.');
+  return out;
+}
+function pprEditor(boxes){
+  const status = h('div', { class:'hlpanel' });
+  function paintStatus(){
+    const m = pprCheck(boxes);
+    status.replaceChildren(h('div', { class:'mono', style:'color:' + (m.length ? '#FFC83D' : '#3DDC84') }, m.length ? 'Still to fix' : 'All three required parts are in, and all boxes are used'),
+      m.map(function(x){ return h('div', { style:'font-size:14px;margin-top:4px' }, x); }));
+  }
+  const rows = boxes.map(function(b, i){
+    const cnt = h('span', { class:'mono mute', style:'font-size:11px' });
+    const inp = h('input', { type:'text', 'aria-label':'Box ' + (i + 1), placeholder:'Box ' + (i + 1) + ' · key words, 10 words max', style:'width:100%;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--surf2);color:var(--text);font:400 17px/1.4 var(--sans)' });
+    inp.value = b.t;
+    function upd(){ cnt.textContent = wordCount(inp.value) + ' / ' + PPR_WORDS + ' words'; }
+    inp.addEventListener('input', function(){
+      const m = inp.value.match(/\S+/g) || [];
+      if (m.length > PPR_WORDS) inp.value = m.slice(0, PPR_WORDS).join(' ');
+      b.t = inp.value; save(); upd(); paintStatus();
+    });
+    const chips = PPR_TAGS.map(function(t){
+      const c = h('button', { class:'chip' + (b.tag === t.k ? ' on' : ''), 'aria-pressed':String(b.tag === t.k) }, t.l);
+      c.addEventListener('click', function(){
+        b.tag = (b.tag === t.k) ? '' : t.k; save();
+        Array.prototype.forEach.call(c.parentNode.children, function(x, k){ const on = PPR_TAGS[k].k === b.tag; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); });
+        paintStatus();
+      });
+      return c;
+    });
+    upd();
+    return h('div', { class:'field' }, h('div', { style:'display:flex;justify-content:space-between' }, h('label', {}, 'Box ' + (i + 1)), cnt), inp, h('div', { style:'display:flex;gap:6px;flex-wrap:wrap;margin-top:8px' }, chips));
+  });
+  paintStatus();
+  return h('div', { class:'stack', style:'gap:12px' }, rows, status);
+}
+function viewPpr(){
+  const P = pprStore();
+  const tabsRow = h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' },
+    h('button', { class:'chip' + (PPRMODE === 'practice' ? ' on' : ''), 'aria-pressed':String(PPRMODE === 'practice'), onclick:function(){ PPRMODE = 'practice'; render(); } }, 'PRACTICE: COMPRESS A TEXT'),
+    h('button', { class:'chip' + (PPRMODE === 'mine' ? ' on' : ''), 'aria-pressed':String(PPRMODE === 'mine'), onclick:function(){ PPRMODE = 'mine'; render(); } }, 'MY PROJECT PPR'));
+  let body;
+  if (PPRMODE === 'practice'){
+    const model = PPRSHOW ? h('div', { class:'hlpanel' }, h('div', { class:'mono', style:'color:#FFC83D' }, 'Model boxes'),
+      PPR_SAMPLE.model.map(function(b, i){ return h('div', { style:'margin-top:8px;font-size:15px' }, h('strong', {}, (i + 1) + '. '), b.t, h('span', { class:'mono mute' }, '  [' + b.tag + ']')); })) : null;
+    body = h('div', { class:'stack' },
+      h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, PPR_SAMPLE.title), h('div', { class:'body' }, h('p', {}, PPR_SAMPLE.text))),
+      h('div', { class:'card' },
+        h('h2', { style:'font-size:26px' }, 'Turn it into seven 10-word boxes.'),
+        h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Key words only. Include at least one product, one practice and one perspective, and tag each box. A PPR is a map for your talk, not sentences.'),
+        pprEditor(P.practice),
+        h('div', { class:'row' }, h('button', { class:'btn alt', onclick:function(){ PPRSHOW = !PPRSHOW; render(); } }, PPRSHOW ? 'Hide the model' : 'Show the model (after you try)')),
+        model));
+  } else {
+    const prompt = h('textarea', { 'aria-label':'Project prompt', placeholder:'Paste the project prompt here when it arrives in January.', style:'min-height:90px' });
+    prompt.value = P.prompt;
+    prompt.addEventListener('input', function(){ P.prompt = prompt.value; save(); });
+    const printable = h('div', { class:'pprprint' },
+      h('h2', {}, 'PPR · ' + (S.student || '')),
+      P.prompt ? h('p', {}, P.prompt) : null,
+      P.mine.map(function(b, i){ return h('div', { style:'border:2px solid #000;border-radius:6px;padding:14px;margin:0 0 12px;min-height:56px;font-size:20px' }, (i + 1) + '. ' + b.t); }));
+    body = h('div', { class:'stack' },
+      h('div', { class:'card' },
+        h('div', { class:'mono mute' }, 'Your real PPR · due in the AP Digital Portfolio by 30 April 2027, 11:59 pm ET'),
+        h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'The prompt and sources arrive in January. Draft here, then type the final boxes into the portal yourself. The PPR is printed and handed back to you on exam day. It is not scored on its own.'),
+        prompt,
+        pprEditor(P.mine),
+        h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ window.print(); } }, 'Print my PPR'), h('a', { class:'btn alt', href:'#/parlato' }, 'Back to speaking'))),
+      printable);
+  }
+  return h('main', {}, h('div', { style:'margin:10px 0 16px' }, h('a', { href:'#/', class:'mono', style:'text-decoration:none' }, '← Today')),
+    h('div', { class:'stack' }, h('div', { class:'card' }, h('div', { class:'mono mute' }, 'PPR · Personalized Project Reference'), h('h2', { style:'font-size:32px' }, 'Seven boxes. Ten words each.'), tabsRow), body));
+}
+
+/* ============================================================
    ROUTER
    ============================================================ */
 function render(){
@@ -1668,6 +1785,7 @@ function render(){
   else if (route === '/skills') view = viewSkills();
   else if (route === '/parlato') view = viewParlato();
   else if (route === '/set') view = viewSet();
+  else if (route === '/ppr') view = viewPpr();
   else if (route === '/archivio') view = viewArchivio();
   else view = viewOggi();
   app.replaceChildren.apply(app, topbar().concat([tabs(), view]).filter(Boolean));
