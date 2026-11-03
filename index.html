@@ -125,6 +125,7 @@ textarea:focus{border-color:var(--acid);outline:0}
 .card.acid .stamp,.card.paper .stamp{color:var(--hot-d);border-color:var(--hot-d)}
 .bigscore{font-family:var(--display);font-weight:800;font-size:72px;line-height:1;letter-spacing:-.04em}
 .rev{display:flex;gap:12px;padding:12px 0;border-top:2px solid var(--line);font-size:14px}
+.opt.sel{border-color:var(--acid);color:var(--acid)}
 .crit{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-top:2px solid var(--line);font-size:14px}
 .crit .cb{display:flex;gap:8px}
 .rev .m{font-family:var(--mono);font-weight:700;width:22px;flex-shrink:0}
@@ -492,7 +493,7 @@ function tabs(){
   function t(href, label, key, icon, on){
     return h('a', { href:href, class:on ? 'on' : '', 'aria-current':on ? 'page' : null }, svg('<svg viewBox="0 0 24 24" aria-hidden="true">' + icon + '</svg>'), label);
   }
-  const inProva = r.indexOf('/prova/') === 0 || r === '/udienza';
+  const inProva = r.indexOf('/prova/') === 0 || r === '/udienza' || r === '/set';
   return h('nav', { class:'tabs', 'aria-label':'Main' },
     t('#/', 'Oggi', 'o', '<path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>', r === '/' || r === '' || inProva),
     t('#/parlato', 'Parlato', 'p', '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 12a6 6 0 0 0 12 0h-2a4 4 0 0 1-8 0zm5 6.9V21h2v-2.1z"/>', r === '/parlato'),
@@ -579,6 +580,10 @@ function viewOggi(){
         h('div', { class:'mono mute' }, 'Parlato · Q2 · 15% of the exam'),
         h('div', { style:'font-size:16px' }, 'Four unseen questions, 40 seconds each. Train the exam format with your headset.'),
         h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/parlato' }, 'Open the speaking drill'))),
+      h('div', { class:'card' },
+        h('div', { class:'mono mute' }, 'Set · multiple choice · 50% of the exam'),
+        h('div', { style:'font-size:16px' }, 'Timed listening and reading questions under the real clock, with results by question type.'),
+        h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/set' }, 'Start a timed set'))),
       h('div', { class:'grid2' }, hearing, skillsHint),
       path,
       h('p', { class:'mute', style:'font-size:13px;text-align:center;margin:8px 0 0' }, '«La legge è uguale per tutti.» · AP exam · Mon 3 May 2027, afternoon · ' + Math.max(0, Math.ceil((new Date(2027, 4, 3) - new Date()) / 86400000)) + ' days to go · project PPR due 30 Apr')));
@@ -1495,6 +1500,163 @@ function viewParlato(){
 }
 
 /* ============================================================
+   v2.9 SET: timed multiple-choice sets. Section II of the 2027 exam is 55 questions in 80 min:
+   Listening 25 Q / 40 min (96 s per question) and Reading 30 Q / 40 min (80 s per question).
+   No feedback during the set, a visible clock, results by question type afterwards.
+   Question types are this tool's own labels, not College Board's.
+   ============================================================ */
+const SET_RATE = { reading:80, listening:96 };
+const MC_TAGS = {
+  p01:['main idea', 'detail', 'detail', 'vocabulary in context', 'inference', 'author\'s purpose'],
+  a01:['main idea', 'detail', 'detail', 'detail', 'author\'s purpose']
+};
+var SETQ = null;
+function setNew(){ return { phase:'setup', kind:'reading', drafts:false, n:5, items:[], i:0, ans:[], deadline:0, allowed:0, iv:null, audio:{}, used:0, res:null }; }
+function setPool(kind, drafts){
+  return EXHIBITS.filter(function(X){
+    if (X.draft && !drafts) return false;
+    return kind === 'listening' ? X.kind === 'ascolto' : X.kind !== 'ascolto';
+  }).sort(function(a, b){ return (ex(a.id).filed ? 1 : 0) - (ex(b.id).filed ? 1 : 0); });
+}
+function setQuestions(kind, drafts){
+  const items = [];
+  setPool(kind, drafts).forEach(function(X){
+    X.mc.forEach(function(q, qi){
+      items.push({ X:X, qi:qi, q:q.q, why:q.why, a:q.a, tag:(MC_TAGS[X.id] || [])[qi] || 'detail',
+        o:shuffle(q.o.map(function(t, i){ return { t:t, i:i }; })) });
+    });
+  });
+  return items;
+}
+function fmtClock(s){ s = Math.max(0, s); return Math.floor(s / 60) + ':' + pad(s % 60); }
+function setFinish(){
+  const Q = SETQ;
+  if (!Q || Q.phase !== 'take') return;
+  if (Q.iv){ clearInterval(Q.iv); Q.iv = null; }
+  Q.used = Math.min(Q.allowed, Math.round((Date.now() - (Q.deadline - Q.allowed * 1000)) / 1000));
+  const byTag = {};
+  let right = 0;
+  Q.items.forEach(function(it, i){
+    const ok = Q.ans[i] === it.a;
+    if (ok) right++;
+    byTag[it.tag] = byTag[it.tag] || [0, 0];
+    byTag[it.tag][1]++;
+    if (ok) byTag[it.tag][0]++;
+  });
+  Q.res = { right:right, total:Q.items.length, byTag:byTag };
+  S.setLog = (S.setLog || []).concat([{ at:new Date().toISOString(), kind:Q.kind, n:Q.items.length, right:right, secs:Q.used, allowed:Q.allowed, byTag:byTag }]).slice(-30);
+  save();
+  Q.phase = 'result';
+  render();
+}
+function setPassage(it){
+  const X = it.X, st = ex(X.id);
+  if (SETQ.kind === 'listening'){
+    if (!SETQ.audio[X.id] && AUDIO_URL[X.id]) SETQ.audio[X.id] = h('audio', { controls:true, src:AUDIO_URL[X.id], style:'width:100%' });
+    return SETQ.audio[X.id] ? h('div', {}, h('div', { class:'mono mute' }, 'Audio · ' + X.title), SETQ.audio[X.id]) : h('div', { class:'alert' }, 'No audio loaded for this exhibit.');
+  }
+  const paras = parasOf(st);
+  if (paras.length) return h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, X.title), h('div', { class:'body' }, paras.map(function(p){ return h('p', {}, p); })));
+  const ta = h('textarea', { 'aria-label':'Paste the article text', placeholder:'Paste the article text here…', style:'min-height:160px' });
+  return h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, X.title),
+    h('p', { style:'font-size:14px;color:#55535f;margin:0 0 8px' }, 'The article is not stored in this tool. Open the original, copy the text, and paste it here (it stays on this device).'),
+    X.url ? h('a', { class:'btn sm', style:'background:#0D0D11;color:#C8FF3D;border-bottom-color:#000', href:X.url, target:'_blank', rel:'noopener' }, 'Open the original ↗') : null,
+    ta, h('div', { class:'row' }, h('button', { class:'btn alt sm', onclick:function(){ st.localText = ta.value; st.hl = []; save(); render(); } }, 'Show the text')));
+}
+
+function setSetup(){
+  const Q = SETQ;
+  const avail = setQuestions(Q.kind, Q.drafts);
+  const pool = setPool(Q.kind, Q.drafts);
+  const n = Math.min(Q.n, avail.length);
+  const allowed = n * SET_RATE[Q.kind];
+  function pick(k){ return h('button', { class:'chip' + (Q.kind === k ? ' on' : ''), 'aria-pressed':String(Q.kind === k), onclick:function(){ Q.kind = k; render(); } }, k === 'reading' ? 'LETTURA · 30 Q / 40 MIN' : 'ASCOLTO · 25 Q / 40 MIN'); }
+  const sizes = [5, 10, 25, 30].filter(function(x){ return x <= Math.max(5, avail.length) || x === 5; }).map(function(x){ return h('button', { class:'chip' + (Q.n === x ? ' on' : ''), 'aria-pressed':String(Q.n === x), onclick:function(){ Q.n = x; render(); } }, x + ' QUESTIONS'); });
+  const audioRows = Q.kind === 'listening' ? pool.map(function(X){
+    const fileIn = h('input', { type:'file', accept:'audio/*', style:'display:none', 'aria-label':'Load audio for ' + X.title });
+    fileIn.addEventListener('change', function(){ const f = fileIn.files && fileIn.files[0]; if (!f) return; AUDIO_URL[X.id] = URL.createObjectURL(f); delete Q.audio[X.id]; render(); });
+    return h('div', { class:'rev', style:'align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap' }, h('span', {}, X.title),
+      h('span', {}, AUDIO_URL[X.id] ? h('span', { class:'mono', style:'color:#3DDC84' }, 'AUDIO LOADED ✓') : h('button', { class:'btn alt sm', onclick:function(){ fileIn.click(); } }, 'Load audio file'), fileIn));
+  }) : [];
+  const audioOk = Q.kind !== 'listening' || pool.every(function(X){ return AUDIO_URL[X.id]; });
+  const unseen = pool.filter(function(X){ return !ex(X.id).filed; }).length;
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Set · Section II · multiple choice · 50% of the exam'),
+    h('h2', { style:'font-size:32px' }, 'Timed set. No feedback until the end.'),
+    h('p', { style:'margin:0' }, 'Answer under the clock like the real exam: 96 seconds per question for listening, 80 for reading. You see your results by question type afterwards.'),
+    h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, pick('reading'), pick('listening')),
+    h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, sizes),
+    h('label', { style:'display:flex;gap:8px;align-items:center;font-size:13px' }, h('input', { type:'checkbox', checked:Q.drafts, onchange:function(e){ Q.drafts = e.target.checked; render(); } }), 'Include sample exhibits (teacher preview)'),
+    avail.length ? h('div', { class:'mono mute' }, avail.length + ' questions available · this set: ' + n + ' · time: ' + fmtClock(allowed) + (unseen === 0 ? ' · all of these sources are ones you have already filed (review, not a fresh test)' : '')) : h('div', { class:'alert' }, 'No questions available for this type yet. More sources are coming. Include the sample exhibits to try the flow.'),
+    audioRows,
+    h('div', { class:'row' }, h('button', { class:'btn', disabled:!avail.length || !audioOk, onclick:function(){
+      Q.items = avail.slice(0, n);
+      Q.ans = new Array(Q.items.length).fill(null);
+      Q.i = 0; Q.allowed = allowed; Q.deadline = Date.now() + allowed * 1000; Q.phase = 'take';
+      Q.iv = setInterval(function(){
+        if (SETQ !== Q || Q.phase !== 'take'){ clearInterval(Q.iv); return; }
+        const left = Math.ceil((Q.deadline - Date.now()) / 1000);
+        const el = document.getElementById('set-timer');
+        if (el) el.textContent = fmtClock(left);
+        if (left <= 0) setFinish();
+      }, 1000);
+      render();
+    } }, 'Start the clock')),
+    h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'Listening sets need each audio file loaded on this device first. The audio rules for the multiple-choice listening section are not confirmed, so replays are not limited here.'));
+}
+
+function setTake(){
+  const Q = SETQ, it = Q.items[Q.i];
+  const timer = h('span', { id:'set-timer', class:'mono', style:'font-size:22px;color:#C8FF3D' }, fmtClock(Math.ceil((Q.deadline - Date.now()) / 1000)));
+  const opts = it.o.map(function(opt, k){
+    const b = h('button', { class:'opt' + (Q.ans[Q.i] === opt.i ? ' sel' : '') }, h('b', {}, LETTERS[k]), h('span', {}, opt.t));
+    b.addEventListener('click', function(){
+      Q.ans[Q.i] = opt.i;
+      Array.prototype.forEach.call(b.parentNode.children, function(x){ x.classList.remove('sel'); });
+      b.classList.add('sel');
+    });
+    return b;
+  });
+  const last = Q.i === Q.items.length - 1;
+  return h('div', { class:'stack' },
+    h('div', { class:'card', style:'flex-direction:row;justify-content:space-between;align-items:center' }, h('span', { class:'mono mute' }, 'Question ' + (Q.i + 1) + ' of ' + Q.items.length), timer),
+    setPassage(it),
+    h('div', { class:'card' }, h('div', { class:'stem' }, it.q), h('div', { class:'stack', style:'gap:10px' }, opts),
+      h('div', { class:'row' },
+        Q.i > 0 ? h('button', { class:'btn alt', onclick:function(){ Q.i--; render(); } }, '← Back') : null,
+        last ? h('button', { class:'btn', onclick:function(){ const un = Q.ans.filter(function(a){ return a === null; }).length; if (!un || confirm(un + ' unanswered. Submit anyway?')) setFinish(); } }, 'Submit the set')
+             : h('button', { class:'btn', onclick:function(){ Q.i++; render(); } }, 'Next →'))));
+}
+
+function setResult(){
+  const Q = SETQ, R = Q.res;
+  const tags = Object.keys(R.byTag).sort(function(a, b){ return (R.byTag[a][0] / R.byTag[a][1]) - (R.byTag[b][0] / R.byTag[b][1]); });
+  const bars = tags.map(function(t){
+    const r = R.byTag[t], pct = Math.round(r[0] / r[1] * 100);
+    return h('div', { style:'margin:8px 0' }, h('div', { style:'display:flex;justify-content:space-between;font-size:14px' }, h('span', {}, t), h('span', { class:'mono mute' }, r[0] + ' / ' + r[1])),
+      h('div', { class:'bar' }, h('div', { style:'width:' + pct + '%' })));
+  });
+  const missed = Q.items.map(function(it, i){ return { it:it, i:i }; }).filter(function(x){ return Q.ans[x.i] !== x.it.a; }).map(function(x){
+    const correct = x.it.o.find(function(o){ return o.i === x.it.a; });
+    return h('div', { class:'rev', style:'flex-direction:column;gap:4px' }, h('span', { class:'mono mute' }, 'Question ' + (x.i + 1) + ' · ' + x.it.tag + (Q.ans[x.i] === null ? ' · no answer' : '')),
+      h('span', {}, x.it.q), h('span', { style:'color:#3DDC84' }, 'Correct: ' + correct.t), h('span', { class:'mute' }, x.it.why));
+  });
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Set finished · ' + (Q.kind === 'reading' ? 'Lettura' : 'Ascolto') + ' · time used ' + fmtClock(Q.used) + ' of ' + fmtClock(Q.allowed)),
+    h('div', { class:'bigscore' }, R.right, h('span', { style:'font-size:28px;color:#A9A6B4' }, ' / ' + R.total)),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'By question type, weakest first. Question types are this tool\'s own labels. Fix the top one before the next set.'),
+    bars,
+    missed.length ? h('div', {}, h('div', { class:'mono mute', style:'margin-bottom:6px' }, 'What you missed'), missed) : h('p', {}, 'No misses.'),
+    h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ SETQ = setNew(); render(); } }, 'Another set'), h('a', { class:'btn ghost', href:'#/' }, 'Back to today')));
+}
+
+function viewSet(){
+  if (!SETQ) SETQ = setNew();
+  const body = SETQ.phase === 'setup' ? setSetup() : (SETQ.phase === 'take' ? setTake() : setResult());
+  return h('main', {}, h('div', { style:'margin:10px 0 16px' }, h('a', { href:'#/', class:'mono', style:'text-decoration:none' }, '← Today')), body);
+}
+
+/* ============================================================
    ROUTER
    ============================================================ */
 function render(){
@@ -1505,6 +1667,7 @@ function render(){
   else if (route === '/udienza') view = viewUdienza();
   else if (route === '/skills') view = viewSkills();
   else if (route === '/parlato') view = viewParlato();
+  else if (route === '/set') view = viewSet();
   else if (route === '/archivio') view = viewArchivio();
   else view = viewOggi();
   app.replaceChildren.apply(app, topbar().concat([tabs(), view]).filter(Boolean));
