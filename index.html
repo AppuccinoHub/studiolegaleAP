@@ -1612,10 +1612,10 @@ const MC_TAGS = {
 var SETQ = null;
 function setNew(){ return { phase:'setup', kind:'reading', drafts:false, n:5, items:[], i:0, ans:[], deadline:0, allowed:0, iv:null, audio:{}, used:0, res:null }; }
 function setPool(kind, drafts){
-  return EXHIBITS.filter(function(X){
+  return shuffle(EXHIBITS.filter(function(X){
     if (X.draft && !drafts) return false;
     return kind === 'listening' ? X.kind === 'ascolto' : X.kind !== 'ascolto';
-  }).sort(function(a, b){ return (ex(a.id).filed ? 1 : 0) - (ex(b.id).filed ? 1 : 0); });
+  })).sort(function(a, b){ return (ex(a.id).filed ? 1 : 0) - (ex(b.id).filed ? 1 : 0); });
 }
 function setQuestions(kind, drafts){
   const items = [];
@@ -1767,24 +1767,25 @@ function viewSet(){
 }
 
 /* ============================================================
-   v3.0 PPR BUILDER: Personalized Project Reference = 7 boxes of at most 10 words (limits from the teacher; the College Board
-   slide says only "word- or character-limited outline", so confirm in the course document). Words are counted as
+   v3.0 PPR BUILDER: Personalized Project Reference = 7 boxes of at most 10 words. CONFIRMED by the official PPR template for French, German,
+   Italian and Spanish: "all text boxes in the PPR will have a 10-word limit"; layout = Title, Introduction, four Main Ideas & Key Details, Conclusion. Words are counted as
    space-separated tokens. Every PPR must show a product, a practice and a perspective.
    The PPR is typed into the AP Digital Portfolio by the student by 30 April; this tool only helps her draft and print it.
    ============================================================ */
 const PPR_BOXES = 7, PPR_WORDS = 10;
+const PPR_ROLES = ['Title of project presentation', 'Introduction', 'Main idea & key detail 1', 'Main idea & key detail 2', 'Main idea & key detail 3', 'Main idea & key detail 4', 'Conclusion'];
 const PPR_TAGS = [{ k:'product', l:'PRODUCT' }, { k:'practice', l:'PRACTICE' }, { k:'perspective', l:'PERSPECTIVE' }, { k:'other', l:'OTHER' }];
 const PPR_SAMPLE = {
   title:'Practice topic: Italian music and identity (invented practice text, not your real project)',
   text:"Il Festival di Sanremo è una gara di canzoni che si tiene ogni anno a Sanremo, in Liguria, dal 1951. Per molti italiani è un rito familiare: si guarda in televisione insieme e si discute dei cantanti il giorno dopo. Il festival mostra una prospettiva importante: la canzone è un modo di raccontare l'identità del paese. Anche i cantautori, come Fabrizio De André, usano le parole per parlare di temi sociali. Negli Stati Uniti, invece, i grandi eventi musicali sono spesso concerti con biglietto, e non programmi che riuniscono tutta la famiglia.",
   model:[
-    { t:'Introduzione: Festival di Sanremo, musica e identità italiana', tag:'other' },
-    { t:'Prodotto: gara di canzoni dal 1951, Liguria', tag:'product' },
-    { t:'Pratica: famiglia guarda la TV insieme', tag:'practice' },
-    { t:'Pratica: discutere i cantanti il giorno dopo', tag:'practice' },
+    { t:'Sanremo: la canzone come specchio dell\'identità italiana', tag:'other' },
+    { t:'Festival di Sanremo, dal 1951, rito della musica italiana', tag:'product' },
+    { t:'Pratica: la famiglia guarda la TV, commenta dopo', tag:'practice' },
     { t:'Prospettiva: la canzone racconta l\'identità del paese', tag:'perspective' },
-    { t:'Prodotto: cantautori, De André, temi sociali', tag:'product' },
-    { t:'Confronto USA: concerti con biglietto, non famiglia', tag:'other' }
+    { t:'Prodotto: cantautori come De André, temi sociali', tag:'product' },
+    { t:'Confronto USA: concerti con biglietto, non famiglia', tag:'other' },
+    { t:'La musica unisce le generazioni e racconta chi siamo', tag:'other' }
   ]
 };
 var PPRMODE = 'practice';
@@ -1816,7 +1817,7 @@ function pprEditor(boxes){
   }
   const rows = boxes.map(function(b, i){
     const cnt = h('span', { class:'mono mute', style:'font-size:11px' });
-    const inp = h('input', { type:'text', 'aria-label':'Box ' + (i + 1), placeholder:'Box ' + (i + 1) + ' · key words, 10 words max', style:'width:100%;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--surf2);color:var(--text);font:400 17px/1.4 var(--sans)' });
+    const inp = h('input', { type:'text', 'aria-label':PPR_ROLES[i], placeholder:PPR_ROLES[i] + ' · key words, 10 words max', style:'width:100%;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--surf2);color:var(--text);font:400 17px/1.4 var(--sans)' });
     inp.value = b.t;
     function upd(){ cnt.textContent = wordCount(inp.value) + ' / ' + PPR_WORDS + ' words'; }
     inp.addEventListener('input', function(){
@@ -1834,7 +1835,7 @@ function pprEditor(boxes){
       return c;
     });
     upd();
-    return h('div', { class:'field' }, h('div', { style:'display:flex;justify-content:space-between' }, h('label', {}, 'Box ' + (i + 1)), cnt), inp, h('div', { style:'display:flex;gap:6px;flex-wrap:wrap;margin-top:8px' }, chips));
+    return h('div', { class:'field' }, h('div', { style:'display:flex;justify-content:space-between' }, h('label', {}, (i + 1) + '. ' + PPR_ROLES[i]), cnt), inp, h('div', { style:'display:flex;gap:6px;flex-wrap:wrap;margin-top:8px' }, chips));
   });
   paintStatus();
   return h('div', { class:'stack', style:'gap:12px' }, rows, status);
@@ -1847,7 +1848,7 @@ function viewPpr(){
   let body;
   if (PPRMODE === 'practice'){
     const model = PPRSHOW ? h('div', { class:'hlpanel' }, h('div', { class:'mono', style:'color:#FFC83D' }, 'Model boxes'),
-      PPR_SAMPLE.model.map(function(b, i){ return h('div', { style:'margin-top:8px;font-size:15px' }, h('strong', {}, (i + 1) + '. '), b.t, h('span', { class:'mono mute' }, '  [' + b.tag + ']')); })) : null;
+      PPR_SAMPLE.model.map(function(b, i){ return h('div', { style:'margin-top:8px;font-size:15px' }, h('strong', {}, PPR_ROLES[i] + ': '), b.t, h('span', { class:'mono mute' }, '  [' + b.tag + ']')); })) : null;
     body = h('div', { class:'stack' },
       h('div', { class:'card paper reading' }, h('div', { class:'mono', style:'color:#55535f' }, PPR_SAMPLE.title), h('div', { class:'body' }, h('p', {}, PPR_SAMPLE.text))),
       h('div', { class:'card' },
@@ -1863,7 +1864,7 @@ function viewPpr(){
     const printable = h('div', { class:'pprprint' },
       h('h2', {}, 'PPR · ' + (S.student || '')),
       P.prompt ? h('p', {}, P.prompt) : null,
-      P.mine.map(function(b, i){ return h('div', { style:'border:2px solid #000;border-radius:6px;padding:14px;margin:0 0 12px;min-height:56px;font-size:20px' }, (i + 1) + '. ' + b.t); }));
+      P.mine.map(function(b, i){ return h('div', { style:'border:2px solid #000;border-radius:6px;padding:14px;margin:0 0 12px;min-height:56px;font-size:20px' }, h('div', { style:'font-size:12px;font-weight:700;margin-bottom:4px' }, PPR_ROLES[i]), b.t); }));
     body = h('div', { class:'stack' },
       h('div', { class:'card' },
         h('div', { class:'mono mute' }, 'Your real PPR · due in the AP Digital Portfolio by 30 April 2027, 11:59 pm ET'),
