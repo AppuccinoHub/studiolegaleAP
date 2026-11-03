@@ -166,21 +166,23 @@ textarea:focus{border-color:var(--acid);outline:0}
    Students open the original (url) or paste the text locally.
    ============================================================ */
 
+/* The six thematic units of the 2027 AP Italian framework (any order). n = study order here; unit = College Board unit number.
+   Study order is a draft. Dates are not set until the calendar is decided. */
 const CASES = [
-  { n:1, name:'Identità personale e pubblica', color:'#7C8CFF', opens:'26 OTT', open:true },
-  { n:2, name:'Famiglia e comunità',           color:'#3DDC84', opens:'16 NOV' },
-  { n:3, name:'Vita contemporanea',            color:'#FFA94D', opens:'14 DIC' },
-  { n:4, name:'Bellezza ed estetica',          color:'#E070FF', opens:'18 GEN' },
-  { n:5, name:'Scienza e tecnologia',          color:'#3DD6E0', opens:'15 FEB' },
-  { n:6, name:'Sfide globali',                 color:'#D9A066', opens:'15 MAR' }
+  { n:1, unit:5, name:'Vita contemporanea',    en:'Contemporary Life',        color:'#FFA94D', opens:'TBD', open:true },
+  { n:2, unit:3, name:'Arte e creatività',     en:'Art and Creativity (2026–27 project theme: music)', color:'#E070FF', opens:'TBD' },
+  { n:3, unit:1, name:'Famiglie e comunità',   en:'Families and Communities', color:'#3DDC84', opens:'TBD' },
+  { n:4, unit:2, name:'Lingua e cultura',      en:'Language and Culture',     color:'#7C8CFF', opens:'TBD' },
+  { n:5, unit:4, name:'Scienza e tecnologia',  en:'Science and Technology',   color:'#3DD6E0', opens:'TBD' },
+  { n:6, unit:6, name:'Contesti globali',      en:'Global Contexts',          color:'#D9A066', opens:'TBD' }
 ];
 
+/* 2027 free-response skills. Rows are taken from the College Board's exam-overview directions for Q1 and Q2 (paraphrased),
+   NOT from official scoring rubrics. The Q3 essay group is added once the official 2027 rubric is in hand.
+   The old email-reply / conversation / cultural-comparison groups were retired: those tasks are not on the 2027 exam. */
 const DESCRIPTORS = [
-  /* La corrispondenza = the 7 criteria rows of the College Board Task 1 Email Reply rubric (checked against the 2026 scoring guidelines) */
-  { task:'La corrispondenza', meta:'Email reply · 15 min', items:['Maintains the exchange','Gives the required information','Comprehensible to the reader','Vocabulary + idiomatic language','Grammar, syntax, usage','Register + formal email conventions','Sentence structure and variety'] },
-  { task:"L'arringa", meta:'Essay · 55 min', items:['Clear thesis','Cites all 3 exhibits','Counter-argument addressed','Organized paragraphs','Rich, precise vocabulary','Accuracy: complex structures'] },
-  { task:"L'interrogatorio", meta:'Conversation · 5 × 20 s', items:['Full 20 s, every turn','Answers what was asked','Elaborates, not one-liners','Register matches the speaker','Pronunciation does not block'] },
-  { task:'Il parere', meta:'Cultural comparison · 2 min', items:['Both communities compared','Concrete Italian evidence','Clear structure, intro → close','Fills 2 min, no dead air','Accuracy under time'] }
+  { task:'Presentazione del progetto', meta:'Q1 · 3 min · 20%', items:['Addresses the prompt fully, with the required factors','Specific examples linking perspectives to products and practices','Logical organization, with transitions','Varied vocabulary, structures, culturally appropriate expressions','Clear delivery: natural pace, intonation, pronunciation'] },
+  { task:'Domande sul progetto', meta:'Q2 · 4 × 40 s · 15%', items:['Complete, relevant answer to each question','Cultural comparison or reflection in at least one answer','Clear, natural speech with varied language'] }
 ];
 
 const EXHIBITS = [
@@ -493,6 +495,7 @@ function tabs(){
   const inProva = r.indexOf('/prova/') === 0 || r === '/udienza';
   return h('nav', { class:'tabs', 'aria-label':'Main' },
     t('#/', 'Oggi', 'o', '<path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>', r === '/' || r === '' || inProva),
+    t('#/parlato', 'Parlato', 'p', '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 12a6 6 0 0 0 12 0h-2a4 4 0 0 1-8 0zm5 6.9V21h2v-2.1z"/>', r === '/parlato'),
     t('#/skills', 'Skills', 's', '<rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="5" width="4" height="15" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/>', r === '/skills'),
     t('#/archivio', 'Archivio', 'a', '<path d="M3 6h7l2 2h9v11H3z"/>', r === '/archivio'));
 }
@@ -557,13 +560,13 @@ function viewOggi(){
   }
   const path = h('div', { class:'card' },
     h('div', { style:'display:flex;justify-content:space-between;align-items:baseline' },
-      h('h2', { style:'font-size:24px' }, 'Caso 01 · Identità personale e pubblica'), h('span', { class:'mono mute' }, filed + ' / 6 filed')),
+      h('h2', { style:'font-size:24px' }, 'Caso 01 · ' + CASES[0].name), h('span', { class:'mono mute' }, filed + ' / 6 filed')),
     h('div', { class:'path' }, nodes),
-    h('div', { class:'pathlbl mono mute' }, h('span', {}, 'Prova 1'), h('span', {}, 'Prova 6 → Processo I, 7 dic')));
+    h('div', { class:'pathlbl mono mute' }, h('span', {}, 'Prova 1'), h('span', {}, 'Prova 6 → unit checkpoint')));
 
   const skillsHint = h('div', { class:'card' },
     h('div', { class:'mono mute' }, 'Your skills'),
-    h('div', { style:'font-size:15px' }, 'Reading has no writing or speaking rubric line. The skills fill once you write the email and enter your teacher\'s grade.'),
+    h('div', { style:'font-size:15px' }, 'Reading and listening are scored by the multiple-choice sets. These skills fill once the speaking drills arrive and your teacher grades them.'),
     h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn ghost sm', href:'#/skills' }, 'See all ' + totalSkills())));
 
   return h('main', {},
@@ -572,9 +575,13 @@ function viewOggi(){
       h('div', { class:'streak' + (streak ? '' : ' cold'), 'aria-label':'Streak ' + streak }, svg(BOLT), streak, h('span', { class:'mono mute', style:'font-size:10px' }, streak === 1 ? 'DAY' : 'DAYS'))),
     h('div', { class:'stack' },
       hero,
+      h('div', { class:'card' },
+        h('div', { class:'mono mute' }, 'Parlato · Q2 · 15% of the exam'),
+        h('div', { style:'font-size:16px' }, 'Four unseen questions, 40 seconds each. Train the exam format with your headset.'),
+        h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/parlato' }, 'Open the speaking drill'))),
       h('div', { class:'grid2' }, hearing, skillsHint),
       path,
-      h('p', { class:'mute', style:'font-size:13px;text-align:center;margin:8px 0 0' }, '«La legge è uguale per tutti.» · AP exam, May 2027')));
+      h('p', { class:'mute', style:'font-size:13px;text-align:center;margin:8px 0 0' }, '«La legge è uguale per tutti.» · AP exam · Mon 3 May 2027, afternoon · ' + Math.max(0, Math.ceil((new Date(2027, 4, 3) - new Date()) / 86400000)) + ' days to go · project PPR due 30 Apr')));
 }
 
 /* ============================================================
@@ -588,7 +595,7 @@ function viewSkills(){
       h('div', { style:'display:flex;justify-content:space-between;align-items:baseline' }, h('h2', { style:'font-size:26px' }, g.task), h('span', { class:'mono mute' }, g.meta)),
       h('div', { style:'display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px' },
         g.items.map(function(t, ii){
-          const n = (S.descriptors && S.descriptors[gi + '-' + ii]) || 0;
+          const n = (S.skills && S.skills[gi + '-' + ii]) || 0;
           if (n >= 3) cleared++;
           return h('div', { class:'skill' + (n >= 3 ? ' done' : '') }, h('div', { class:'t' }, t),
             h('div', {}, h('div', { class:'bar' }, h('div', { style:'width:' + Math.min(100, Math.round(n / 3 * 100)) + '%' })),
@@ -597,7 +604,7 @@ function viewSkills(){
   });
   return h('main', {},
     h('div', { class:'hello' }, h('h1', {}, 'Skills'), h('div', { class:'streak' }, cleared, h('span', { class:'mono mute', style:'font-size:10px' }, '/ ' + totalSkills() + ' CLEARED'))),
-    h('p', { class:'mute', style:'margin:0 0 20px;max-width:640px' }, 'Each tile is one line of the College Board rubric. It clears after you hit it in three tasks in a row. No percent score anywhere. Corrispondenza fills when you enter your teacher\'s email grade. The essay and speaking tasks are not built yet.'),
+    h('p', { class:'mute', style:'margin:0 0 20px;max-width:640px' }, 'Each tile is one skill the 2027 exam asks for in speaking. A tile clears after you hit it in three drills in a row. No percent score anywhere. The speaking drills are not built yet, and the essay skills will be added when the official rubric is in.'),
     h('div', { class:'stack', style:'gap:28px' }, groups));
 }
 
@@ -623,7 +630,7 @@ function viewArchivio(){
     h('div', { class:'hello' }, h('h1', {}, 'Archivio'), h('div', { class:'streak' }, filed.length, h('span', { class:'mono mute', style:'font-size:10px' }, '/ ' + total + ' FILED'))),
     h('div', { class:'stack' },
       h('div', { class:'card' }, h('div', { style:'display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:5px' }, cells),
-        h('div', { class:'mute', style:'font-size:14px' }, 'Every source you analyze is filed here and citable in any arringa or parere until May. Aim to walk into the exam with 36.'), list),
+        h('div', { class:'mute', style:'font-size:14px' }, 'Every source you analyze is filed here. They become your evidence for the essay and your project. Aim to walk into the exam with 36.'), list),
       h('div', { class:'card' }, h('h2', { style:'font-size:24px' }, 'I sei casi'), cases),
       h('div', { class:'card' }, h('h2', { style:'font-size:24px' }, 'Backup'),
         h('div', { class:'mute', style:'font-size:14px' }, 'Your archive lives only in this browser. Export every Friday. One cleared cache and it is gone. Last backup: ' + backupAge() + '.'),
@@ -915,7 +922,7 @@ function filedPanel(X, st){
     h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'It\'s in your archive and the hearing can use it. Compare your breakdown with the model: they don\'t need to match, but they should hit the same four points.'),
     mine,
     vocabReview(X, st),
-    mailPanel(X, st),
+    /* email task retired (not on the 2027 exam): mailPanel(X, st) is intentionally not shown */
     h('div', { class:'row' }, h('a', { class:'btn', href:'#/udienza' }, 'Run the hearing'), h('a', { class:'btn alt', href:'#/' }, 'Back to today')));
 }
 
@@ -1033,7 +1040,7 @@ function mailPanel(X, st){
     S.descriptors = S.descriptors || {};
     let cleared = false;
     items.forEach(function(t, i){
-      const key = '0-' + i, n = S.descriptors[key] || 0;
+      const key = 'old-email-' + i, n = S.descriptors[key] || 0;
       S.descriptors[key] = sel[i] ? n + 1 : 0;
       if (sel[i] && n + 1 === 3) cleared = true;
     });
@@ -1312,6 +1319,182 @@ function viewUdienza(){
 }
 
 /* ============================================================
+   v2.8 PARLATO: Q2 "Project Q&A" drill. 4 unseen questions, each heard at most twice, notes allowed,
+   a 40-second answer that records for the full 40 s (cannot be stopped early), at least one comparison/reflection.
+   Recordings stay in memory on this device; the student downloads them for the teacher. Nothing is uploaded.
+   Questions are read by the browser's text-to-speech (Italian voice if the device has one).
+   ============================================================ */
+const QA_BANK = [
+  { k:'info', q:'Qual è stata la scoperta più interessante della tua ricerca, e perché?' },
+  { k:'info', q:'Puoi descrivere un esempio concreto che hai trovato nelle tue fonti?' },
+  { k:'info', q:'Quale fonte è stata la più utile per il tuo progetto? Spiega perché.' },
+  { k:'info', q:'Chi sono le persone coinvolte nel tema che hai studiato, e che cosa fanno?' },
+  { k:'info', q:'Che cosa ti ha sorpreso di più mentre facevi la ricerca?' },
+  { k:'info', q:'Come è cambiato il tuo modo di vedere l\'argomento dopo la ricerca?' },
+  { k:'info', q:'Perché secondo te questo tema è importante per la comunità che hai scelto?' },
+  { k:'cmp',  q:'Come si confronta questo aspetto della cultura italiana con quello che conosci nella tua comunità?' },
+  { k:'cmp',  q:'C\'è qualcosa di simile nella tua cultura? Spiega le somiglianze e le differenze.' },
+  { k:'cmp',  q:'Quale prodotto culturale della tua ricerca useresti per spiegare il tema a un amico americano, e perché?' },
+  { k:'cmp',  q:'In che modo le pratiche che hai studiato riflettono i valori di quella comunità?' },
+  { k:'cmp',  q:'Se potessi cambiare una cosa nel modo in cui la comunità vive questo tema, che cosa cambieresti e perché?' }
+];
+const QA_FRAME = [
+  { h:'Say it', t:'One clear sentence that answers the question.' },
+  { h:'Back it up', t:'A detail from your research: a name, a place, a number.' },
+  { h:'Example', t:'A product or practice you can name.' },
+  { h:'Compare / reflect', t:'«Nella mia cultura…», «A differenza di…», «Questo mi fa pensare che…»' }
+];
+var QA = null;
+function qaNew(){
+  const info = shuffle(QA_BANK.filter(function(q){ return q.k === 'info'; })).slice(0, 3);
+  const cmp = shuffle(QA_BANK.filter(function(q){ return q.k === 'cmp'; })).slice(0, 1);
+  return { qs:shuffle(info.concat(cmp)), i:0, phase:'intro', stage:'listen', plays:0, showText:false, notes:['', '', '', ''], cmp:[false, false, false, false], urls:[], micMsg:'', micUrl:'', counted:false, graded:false };
+}
+function ttsOk(){ return ('speechSynthesis' in window) && (typeof SpeechSynthesisUtterance !== 'undefined'); }
+function speakIt(text){
+  try {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'it-IT'; u.rate = 0.92;
+    const v = (window.speechSynthesis.getVoices() || []).find(function(x){ return /^it/i.test(x.lang); });
+    if (v) u.voice = v;
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function recordFor(seconds, onTick, onDone, onErr){
+  if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || typeof MediaRecorder === 'undefined'){ onErr('This browser cannot record. Use Chrome or Edge on a computer.'); return; }
+  navigator.mediaDevices.getUserMedia({ audio:true }).then(function(stream){
+    const chunks = [];
+    let rec;
+    try { rec = new MediaRecorder(stream); } catch (e) { stream.getTracks().forEach(function(t){ t.stop(); }); onErr('Recording is not supported on this device.'); return; }
+    rec.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = function(){ stream.getTracks().forEach(function(t){ t.stop(); }); onDone(new Blob(chunks, { type:rec.mimeType || 'audio/webm' })); };
+    rec.start();
+    let left = seconds;
+    onTick(left);
+    const iv = setInterval(function(){
+      left--; onTick(left);
+      if (left <= 0){ clearInterval(iv); if (rec.state !== 'inactive') rec.stop(); }
+    }, 1000);
+  }, function(){ onErr('The microphone is blocked. Allow it in the browser and plug in the headset.'); });
+}
+
+function qaIntro(){
+  S.qa = S.qa || { sets:0 };
+  const msg = h('div', { class:'mono', style:'color:#FFC83D;font-size:12px' }, QA.micMsg);
+  const out = h('div', {});
+  if (QA.micUrl) out.append(h('audio', { controls:true, src:QA.micUrl, style:'width:100%' }));
+  const test = h('button', { class:'btn alt sm', onclick:function(){
+    msg.textContent = 'Recording 3 seconds. Say something in Italian.';
+    recordFor(3, function(){}, function(b){ QA.micUrl = URL.createObjectURL(b); QA.micMsg = 'If you can hear yourself below, the microphone works.'; render(); }, function(m){ QA.micMsg = m; render(); });
+  } }, 'Test my microphone');
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Parlato · Domande sul progetto · Q2 · 15% of the exam'),
+    h('h2', { style:'font-size:32px' }, 'Four questions. Forty seconds each.'),
+    h('p', { style:'margin:0' }, 'This is the exam format. You hear each question at most twice. You can take notes. Then you record a 40-second answer. The recording runs the full 40 seconds, so keep talking. In at least one answer, make a cultural comparison or a reflection.'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'On exam day you need a wired headset with a microphone. Practice with yours. Recordings stay on this device, and you can download them for your teacher.'),
+    h('div', { class:'row' }, test), msg, out,
+    h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ QA.phase = 'q'; QA.stage = 'listen'; QA.plays = 0; render(); } }, 'Start the four questions')),
+    h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'These practice questions are generic project questions written for training, not College Board questions. Your real project topic arrives in January.'));
+}
+
+function qaQuestion(){
+  const i = QA.i, Q = QA.qs[i];
+  const wheels = (S.qa.sets || 0) < 2;
+  const head = h('div', { class:'mono mute' }, 'Question ' + (i + 1) + ' of 4');
+  if (QA.stage === 'listen'){
+    const canText = !ttsOk() || wheels || QA.showText;
+    const play = h('button', { class:'btn', disabled:QA.plays >= 2 || !ttsOk(), onclick:function(){ QA.plays++; speakIt(Q.q); render(); } }, QA.plays >= 2 ? 'Played twice' : 'Play the question (' + QA.plays + ' / 2)');
+    const ta = h('textarea', { 'aria-label':'Notes', style:'min-height:110px', placeholder:'Notes. Key words only.' });
+    ta.value = QA.notes[i];
+    ta.addEventListener('input', function(){ QA.notes[i] = ta.value; });
+    return h('div', { class:'card' }, head,
+      h('h2', { style:'font-size:28px' }, 'Listen. Take notes.'),
+      ttsOk() ? h('div', { class:'row' }, play) : h('p', { class:'mute', style:'margin:0' }, 'This device has no text-to-speech, so the question is shown as text.'),
+      h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'If the voice sounds English, your device has no Italian voice installed. Use the text instead.'),
+      canText ? h('div', { class:'hlpanel', style:'font-size:18px;line-height:1.5' }, Q.q) : null,
+      ttsOk() && !wheels && !QA.showText ? h('div', { class:'row' }, h('button', { class:'btn alt sm', onclick:function(){ QA.showText = true; render(); } }, 'Show the text (training wheel)')) : null,
+      wheels ? h('div', { class:'hlpanel' }, h('div', { class:'mono mute' }, 'Skeleton for a 40-second answer · shown for your first two sets'),
+        QA_FRAME.map(function(f){ return h('div', { style:'margin-top:8px;font-size:14px' }, h('strong', { style:'color:#C8FF3D' }, f.h + ': '), f.t); })) : null,
+      ta,
+      h('div', { class:'row' }, h('button', { class:'btn', disabled:(QA.plays < 1 && !canText), onclick:function(){ QA.stage = 'record'; render(); } }, 'Ready to record →')));
+  }
+  if (QA.stage === 'record'){
+    const tm = h('div', { class:'big', style:'font-size:64px;color:#C8FF3D' }, '0:40');
+    const status = h('div', { class:'mono mute' }, 'You cannot stop early. When you press the button, the 40 seconds start.');
+    const btn = h('button', { class:'btn hot', onclick:function(){
+      btn.setAttribute('disabled', '');
+      status.textContent = 'Recording… keep talking until the end.';
+      recordFor(40, function(left){ tm.textContent = '0:' + pad(Math.max(0, left)); },
+        function(blob){ QA.urls[i] = URL.createObjectURL(blob); QA.stage = 'review'; render(); },
+        function(m){ status.textContent = m; btn.removeAttribute('disabled'); });
+    } }, 'Start the 40 seconds');
+    return h('div', { class:'card' }, head, h('h2', { style:'font-size:28px' }, 'Your answer.'), QA.notes[i] ? h('div', { class:'hlpanel', style:'white-space:pre-wrap' }, h('div', { class:'mono mute' }, 'Your notes'), QA.notes[i]) : null, tm, status, h('div', { class:'row' }, btn));
+  }
+  /* review */
+  const last = i === 3;
+  const cb = h('button', { class:'chip' + (QA.cmp[i] ? ' on' : ''), 'aria-pressed':QA.cmp[i] ? 'true' : 'false' }, QA.cmp[i] ? 'COMPARISON / REFLECTION ✓' : 'I MADE A COMPARISON OR REFLECTION');
+  cb.addEventListener('click', function(){ QA.cmp[i] = !QA.cmp[i]; cb.classList.toggle('on', QA.cmp[i]); cb.setAttribute('aria-pressed', String(QA.cmp[i])); cb.textContent = QA.cmp[i] ? 'COMPARISON / REFLECTION ✓' : 'I MADE A COMPARISON OR REFLECTION'; });
+  return h('div', { class:'card' }, head, h('h2', { style:'font-size:28px' }, 'Listen to yourself.'),
+    h('audio', { controls:true, src:QA.urls[i], style:'width:100%' }),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Did you fill all 40 seconds? Did you give a detail and an example? Mark the box only if you really compared or reflected.'),
+    h('div', { class:'row' }, cb),
+    h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ if (last){ QA.phase = 'summary'; } else { QA.i = i + 1; QA.stage = 'listen'; QA.plays = 0; QA.showText = false; } render(); } }, last ? 'Finish the set →' : 'Next question →')));
+}
+
+function qaSummary(){
+  S.qa = S.qa || { sets:0 };
+  if (!QA.counted){ QA.counted = true; S.qa.sets = (S.qa.sets || 0) + 1; save(); }
+  const anyCmp = QA.cmp.some(function(x){ return x; });
+  const rows = QA.qs.map(function(q, i){
+    return h('div', { class:'rev', style:'flex-direction:column;gap:6px' },
+      h('span', { class:'mono mute' }, 'Question ' + (i + 1)), h('span', {}, q.q),
+      h('audio', { controls:true, src:QA.urls[i], style:'width:100%' }),
+      h('a', { class:'btn alt sm', href:QA.urls[i], download:'domanda-' + (i + 1) + '.webm', target:'_blank', rel:'noopener', style:'align-self:flex-start' }, 'Download for your teacher'));
+  });
+  const items = DESCRIPTORS[1].items;
+  const sel = new Array(items.length).fill(null);
+  const rec = h('button', { class:'btn', disabled:true }, 'Record my teacher\'s result');
+  function chk(){ if (sel.every(function(v){ return v !== null; })) rec.removeAttribute('disabled'); else rec.setAttribute('disabled', ''); }
+  rec.addEventListener('click', function(){
+    if (rec.hasAttribute('disabled')) return;
+    S.skills = S.skills || {};
+    let cleared = false;
+    items.forEach(function(t, k){
+      const key = '1-' + k, n = S.skills[key] || 0;
+      S.skills[key] = sel[k] ? n + 1 : 0;
+      if (sel[k] && n + 1 === 3) cleared = true;
+    });
+    QA.graded = true; save(); render(); knock(); if (cleared) burst();
+  });
+  const crit = items.map(function(t, k){
+    const yes = h('button', { class:'chip', 'aria-pressed':'false' }, 'SOLID');
+    const no = h('button', { class:'chip', 'aria-pressed':'false' }, 'NEEDS WORK');
+    function paint(){ yes.classList.toggle('on', sel[k] === true); no.classList.toggle('on', sel[k] === false); yes.setAttribute('aria-pressed', String(sel[k] === true)); no.setAttribute('aria-pressed', String(sel[k] === false)); }
+    yes.addEventListener('click', function(){ sel[k] = true; paint(); chk(); });
+    no.addEventListener('click', function(){ sel[k] = false; paint(); chk(); });
+    return h('div', { class:'crit' }, h('span', {}, t), h('span', { class:'cb' }, yes, no));
+  });
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Set ' + S.qa.sets + ' done'),
+    h('h2', { style:'font-size:32px' }, 'Four answers recorded.'),
+    anyCmp ? null : h('div', { class:'alert' }, 'None of your answers had a comparison or reflection. On the exam, at least one is required.'),
+    rows,
+    QA.graded ? h('p', { class:'mute' }, 'Result recorded. See your Skills tab.') : h('div', { class: 'stack', style:'gap:10px' },
+      h('h2', { style:'font-size:22px' }, 'When your teacher has listened'),
+      h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Enter what she told you for each skill. Mark SOLID only if she said it was strong. A skill clears after three SOLID sets in a row, and any NEEDS WORK resets it. This only works if you are honest.'),
+      crit, h('div', { class:'row' }, rec)),
+    h('div', { class:'row' }, h('button', { class:'btn alt', onclick:function(){ QA = qaNew(); render(); } }, 'Run another set'), h('a', { class:'btn ghost', href:'#/' }, 'Back to today')));
+}
+
+function viewParlato(){
+  if (!QA) QA = qaNew();
+  S.qa = S.qa || { sets:0 };
+  const body = QA.phase === 'intro' ? qaIntro() : (QA.phase === 'summary' ? qaSummary() : qaQuestion());
+  return h('main', {}, h('div', { style:'margin:10px 0 16px' }, h('a', { href:'#/', class:'mono', style:'text-decoration:none' }, '← Today')), body);
+}
+
+/* ============================================================
    ROUTER
    ============================================================ */
 function render(){
@@ -1321,6 +1504,7 @@ function render(){
   if (route.indexOf('/prova/') === 0) view = viewProva(route.slice(7));
   else if (route === '/udienza') view = viewUdienza();
   else if (route === '/skills') view = viewSkills();
+  else if (route === '/parlato') view = viewParlato();
   else if (route === '/archivio') view = viewArchivio();
   else view = viewOggi();
   app.replaceChildren.apply(app, topbar().concat([tabs(), view]).filter(Boolean));
