@@ -167,6 +167,11 @@ textarea:focus{border-color:var(--acid);outline:0}
 @keyframes conf{to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:640px){.grid2{grid-template-columns:1fr}.cmp{grid-template-columns:1fr}.top input{width:120px}}
+.pjpills{display:flex;gap:8px;flex-wrap:wrap}
+.pjpills .chip{min-height:44px}
+select{max-width:100%}
+input[type=text],textarea,select{font-size:16px}
+@media (max-width:520px){.pjpills{display:grid;grid-template-columns:1fr 1fr}.pjpills .chip{text-align:center}main>h1{font-size:34px}}
 </style>
 </head>
 <body>
@@ -608,7 +613,7 @@ function tabs(){
   const inProva = r.indexOf('/prova/') === 0 || r === '/udienza' || r === '/set' || r === '/saggio';
   return h('nav', { class:'tabs', 'aria-label':'Main' },
     t('#/', 'Oggi', 'o', '<path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>', r === '/' || r === '' || inProva),
-    t('#/parlato', 'Parlato', 'p', '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 12a6 6 0 0 0 12 0h-2a4 4 0 0 1-8 0zm5 6.9V21h2v-2.1z"/>', r === '/parlato' || r === '/ppr' || r === '/presentazione'),
+    t('#/parlato', 'Parlato', 'p', '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 12a6 6 0 0 0 12 0h-2a4 4 0 0 1-8 0zm5 6.9V21h2v-2.1z"/>', r === '/parlato' || r === '/ppr' || r === '/presentazione' || r === '/progetto'),
     t('#/skills', 'Skills', 's', '<rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="5" width="4" height="15" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/>', r === '/skills'),
     t('#/archivio', 'Archivio', 'a', '<path d="M3 6h7l2 2h9v11H3z"/>', r === '/archivio'));
 }
@@ -770,6 +775,7 @@ function viewOggi(){
     h('div', { class:'stack' },
       hero,
       weekCard(),
+      pjCard(),
       h('div', { class:'card' },
         h('div', { class:'mono mute' }, 'Parlato · Q2 · 15% of the exam'),
         h('div', { style:'font-size:16px' }, 'Q1: a presentation from your PPR, 3 minutes to prepare, 3 to talk. Q2: four unseen questions, 40 seconds each. Train with your headset.'),
@@ -2022,6 +2028,11 @@ function pprEditor(boxes){
   paintStatus();
   return h('div', { class:'stack', style:'gap:12px' }, rows, status);
 }
+function pjPprPanel(){
+  const J = pjStore(), picked = J.plan.f.filter(function(f){ return f.pick >= 0 && J.factors[f.pick].trim(); });
+  if (!picked.length) return null;
+  return h('div', { class:'hlpanel' }, h('div', { class:'mono', style:'color:#FFC83D' }, 'My three factors (from my action plan)'), picked.map(function(f){ return h('div', { style:'font-size:15px;margin-top:6px' }, 'Factor ' + (f.pick + 1) + ': ' + J.factors[f.pick] + (f.pick >= 4 ? '  [perspective]' : '')); }));
+}
 function viewPpr(){
   const P = pprStore();
   const tabsRow = h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' },
@@ -2050,8 +2061,9 @@ function viewPpr(){
     body = h('div', { class:'stack' },
       h('div', { class:'card' },
         h('div', { class:'mono mute' }, 'Your real PPR · due in the AP Digital Portfolio by 30 April 2027, 11:59 pm ET'),
-        h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'The prompt and sources arrive in January. Draft here, then type the final boxes into the portal yourself. The PPR is printed and handed back to you on exam day. It is not scored on its own.'),
+        h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'The prompt and sources arrive in January. Draft here, then type the final boxes into the portal yourself. You have access to your PPR during the presentation. It is not scored on its own.'),
         prompt,
+        pjPprPanel(),
         pprEditor(P.mine),
         h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ window.print(); } }, 'Print my PPR'), h('a', { class:'btn alt', href:'#/parlato' }, 'Back to speaking'))),
       printable);
@@ -2419,6 +2431,340 @@ function viewPresentazione(){
 }
 
 /* ============================================================
+   v3.7 IL PROGETTO: the course-project track (research steps, reflection, source sheets, action plan, feedback, likely Q&A).
+   The app never supplies a topic, a community or sources, and never writes PPR or script wording. Everything here is the student's own work, in Italian.
+   Data: S.proj. The prompt text is shared with the PPR builder (S.ppr.prompt). Feedback criteria are paraphrased, not College Board's wording.
+   ============================================================ */
+const PJ_STEPS = [
+  { k:'traccia', t:'Traccia', s:'The prompt' },
+  { k:'riflessione', t:'Riflessione', s:'Initial reflection' },
+  { k:'fonti', t:'Fonti', s:'Source sheets' },
+  { k:'piano', t:'Piano', s:'Action plan' },
+  { k:'feedback', t:'Feedback', s:'Self-check' },
+  { k:'domande', t:'Domande', s:'Likely Q&A' }
+];
+const PJ_DATES = [
+  { d:'January 2027', t:'The project prompt and sources packet is released in AP Digital Portfolio (check the exact date with your teacher).' },
+  { d:'30 April 2027, 11:59 PM ET', t:'Your Personalized Project Reference (PPR) is due in AP Digital Portfolio.' },
+  { d:'Mon 3 May 2027', t:'Exam day. The speaking tasks come first.' }
+];
+const PJ_QTYPES = [
+  ['pref', 'Express a preference'], ['opin', 'Give or justify an opinion'], ['advice', 'Give advice'], ['info', 'Explain or give information'],
+  ['emo', 'Express an emotion'], ['pred', 'Make a prediction'], ['cmp', 'Compare with my own community'], ['link', 'Link a perspective to a product or practice']
+];
+const PJ_FORMS = {
+  pres: { name:'Presentation', pts:'11 points on the real exam: Task 2 · Culture 2 · Organization 2 · Language 3 · Delivery 2', groups:[
+    { g:'Svolgimento del compito', c:[['p1', 'Risponde a tutto ciò che chiede la traccia'], ['p2', 'Spiega almeno tre fattori'], ['p3', 'Dà dettagli presi dalla ricerca (informazioni, esempi)']] },
+    { g:'Comprensione culturale', c:[['p4', 'Porta esempi concreti di prodotti o pratiche trovati nella ricerca'], ['p5', 'Mostra come le prospettive spiegano prodotti o pratiche']] },
+    { g:'Organizzazione', c:[['p6', "Le idee seguono un ordine logico, con un inizio e una chiusura"], ['p7', 'Usa connettivi per legare le idee']] },
+    { g:'Controllo del linguaggio', c:[['p8', 'Lessico vario, con espressioni adatte alla cultura'], ['p9', 'Frasi semplici e frasi complesse'], ['p10', 'Gli errori non impediscono di capire']] },
+    { g:'Esposizione orale', c:[['p11', 'Ritmo sicuro, poche esitazioni e riempitivi'], ['p12', 'Pronuncia chiara e intonazione naturale']] } ] },
+  qa: { name:'Q&A', pts:'9 points on the real exam: Task 2 · Culture 2 · Language 3 · Fluency 2', groups:[
+    { g:'Svolgimento del compito', c:[['q1', 'Risponde con le informazioni richieste ad almeno tre domande']] },
+    { g:'Comprensione culturale', c:[['q2', 'In almeno una risposta fa un confronto culturale o collega prospettive a prodotti o pratiche']] },
+    { g:'Controllo del linguaggio', c:[['q3', 'Lessico vario ed espressioni naturali'], ['q4', 'Frasi semplici e frasi complesse'], ['q5', 'Risposte chiare: gli errori non impediscono di capire']] },
+    { g:'Scorrevolezza', c:[['q6', 'Ritmo adatto a una conversazione, poche pause e riempitivi'], ['q7', 'Pronuncia chiara e intonazione naturale']] } ] },
+  refl: { name:'Initial reflection', pts:'Not scored by College Board. For practice only.', groups:[
+    { g:'La riflessione iniziale', c:[['r1', 'Risponde a tutte e quattro le domande, in modo logico e con dettagli'], ['r2', 'Usa informazioni di almeno tre fonti del pacchetto'], ['r3', "Collega esperienze o conoscenze culturali proprie all'argomento"], ['r4', 'Le idee seguono una progressione logica'], ['r5', 'Lessico vario e strutture grammaticali adatte']] } ] }
+};
+var PJ_OPEN = -1;
+var PJ_FB = 'pres';
+var PJ_REC = null;
+function pjArr(a, n, v){ const o = Array.isArray(a) ? a.slice(0, n) : []; while (o.length < n) o.push(v); return o; }
+function pjStore(){
+  const P = S.proj = S.proj || {};
+  if (!P.step) P.step = 'traccia';
+  P.factors = pjArr(P.factors, 6, '');
+  P.rq = pjArr(P.rq, 4, '');
+  P.refl = pjArr(P.refl, 4, '');
+  P.sources = Array.isArray(P.sources) ? P.sources : [];
+  P.plan = P.plan || {};
+  const L = P.plan;
+  L.topic = L.topic || ''; L.community = L.community || '';
+  L.f = Array.from({ length:3 }, function(_, i){ const o = (L.f && L.f[i]) || {}; return { pick:(typeof o.pick === 'number' ? o.pick : -1), why:o.why || '', find:o.find || '' }; });
+  L.terms = L.terms || ''; L.res = L.res || ''; L.people = L.people || ''; L.org = L.org || '';
+  L.goals = Array.from({ length:5 }, function(_, i){ const o = (L.goals && L.goals[i]) || {}; return { g:o.g || '', when:o.when || '' }; });
+  P.fb = P.fb || {};
+  Object.keys(PJ_FORMS).forEach(function(k){ const o = P.fb[k] || {}; P.fb[k] = { who:o.who || 'Self', r:o.r || {}, note:o.note || '' }; });
+  P.qs = Array.from({ length:4 }, function(_, i){ const o = (P.qs && P.qs[i]) || {}; return { q:o.q || '', ty:o.ty || '' }; });
+  return P;
+}
+function pjDone(P){
+  const T = pprStore();
+  return {
+    traccia: !!((T.prompt || '').trim() || P.factors.some(function(x){ return x.trim(); })),
+    riflessione: P.refl.some(function(x){ return x.trim(); }),
+    fonti: P.sources.length > 0,
+    piano: !!(P.plan.topic.trim() || P.plan.f.some(function(f){ return f.pick >= 0; })),
+    feedback: Object.keys(P.fb).some(function(k){ return Object.keys(P.fb[k].r).length > 0; }),
+    domande: P.qs.some(function(x){ return x.q.trim(); })
+  };
+}
+function pjField(label, hint, el){
+  return h('div', { class:'field' }, h('label', {}, label), hint ? h('p', { class:'hint' }, hint) : null, el);
+}
+function pjText(get, set, opts){
+  opts = opts || {};
+  const ta = h('textarea', { 'aria-label':opts.label || 'Your answer', style:'min-height:' + (opts.min || 120) + 'px', lang:'it', spellcheck:'false', autocapitalize:'sentences' });
+  ta.value = get() || '';
+  const cnt = h('div', { class:'cnt' });
+  function upd(){ cnt.textContent = wordCount(ta.value) + ' words'; }
+  ta.addEventListener('input', function(){ set(ta.value); save(); upd(); });
+  upd();
+  return opts.nocount ? ta : [ta, cnt];
+}
+function pjLine(get, set, ph, label){
+  const inp = h('input', { type:'text', 'aria-label':label || ph, placeholder:ph || '', lang:'it', spellcheck:'false', style:'width:100%;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--surf2);color:var(--text);font:400 17px/1.4 var(--sans)' });
+  inp.value = get() || '';
+  inp.addEventListener('input', function(){ set(inp.value); save(); });
+  return inp;
+}
+function pjNav(P, idx){
+  const prev = PJ_STEPS[idx - 1], next = PJ_STEPS[idx + 1];
+  return h('div', { class:'row' },
+    prev ? h('button', { class:'btn alt', onclick:function(){ P.step = prev.k; save(); render(); window.scrollTo(0, 0); } }, '← ' + prev.t) : null,
+    next ? h('button', { class:'btn', onclick:function(){ P.step = next.k; save(); render(); window.scrollTo(0, 0); } }, next.t + ' →') : null);
+}
+/* 1. Traccia */
+function pjTraccia(P){
+  const T = pprStore();
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Step 1 of 6 · Traccia'),
+    h('h2', { style:'font-size:32px' }, 'Enter the prompt exactly as College Board gives it.'),
+    h('p', { style:'margin:0' }, 'The packet arrives in January 2027 through AP Digital Portfolio. Until then, leave this empty. Studio Legale never supplies a topic, a community or sources, because choosing them is your job.'),
+    h('div', { class:'hlpanel' }, h('div', { class:'mono', style:'color:#FFC83D' }, 'Key dates'), PJ_DATES.map(function(x){ return h('div', { style:'margin-top:8px;font-size:15px' }, h('strong', {}, x.d + ': '), x.t); })),
+    pjField('The scenario', 'Paste the paragraph that describes the task. It also appears as the prompt in your Q1 presentation drill.', pjText(function(){ return T.prompt; }, function(v){ T.prompt = v; }, { label:'The scenario', min:150 })),
+    h('h2', { style:'font-size:24px;margin-top:6px' }, 'The six factors'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Factors 1 to 4 are products and practices. Factors 5 and 6 are perspectives. In your presentation you explain at least three, and at least one must be a perspective.'),
+    P.factors.map(function(_, i){ return pjField('Factor ' + (i + 1) + (i < 4 ? ' · product or practice' : ' · perspective'), '', pjLine(function(){ return P.factors[i]; }, function(v){ P.factors[i] = v; }, 'Paste the factor name', 'Factor ' + (i + 1))); }),
+    h('h2', { style:'font-size:24px;margin-top:6px' }, 'The four reflection questions'),
+    P.rq.map(function(_, i){ return pjField('Question ' + (i + 1), '', pjText(function(){ return P.rq[i]; }, function(v){ P.rq[i] = v; }, { label:'Reflection question ' + (i + 1), min:70, nocount:true })); }),
+    pjNav(P, 0));
+}
+/* 2. Riflessione */
+function pjRiflessione(P){
+  const cited = P.sources.filter(function(s){ return s.cited; }).length;
+  const done = P.refl.filter(function(x){ return wordCount(x) >= 25; }).length;
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Step 2 of 6 · Riflessione iniziale'),
+    h('h2', { style:'font-size:32px' }, 'Say what you think, not what the sources say.'),
+    h('p', { style:'margin:0' }, 'Write in Italian, on your own. Answer all four questions in detail, draw on at least three sources, and connect them to what you know and have lived. A summary of the sources is not a reflection. Use a dictionary for words; follow College Board\'s AI guidance and your teacher\'s rules for everything else. This task is practice and is not scored by College Board.'),
+    P.refl.map(function(_, i){
+      return pjField((i + 1) + '. ' + (P.rq[i].trim() || '(Enter this question on the Traccia screen)'), '', pjText(function(){ return P.refl[i]; }, function(v){ P.refl[i] = v; }, { label:'Reflection answer ' + (i + 1), min:170 }));
+    }),
+    h('div', { class:'hlpanel' }, h('div', { class:'mono', style:'color:' + (done >= 4 && cited >= 3 ? '#3DDC84' : '#FFC83D') }, 'Quick check · not a score'),
+      h('div', { style:'font-size:14px;margin-top:6px' }, (done >= 4 ? '✓' : '○') + ' ' + done + ' of 4 answers have 25+ words'),
+      h('div', { style:'font-size:14px;margin-top:4px' }, (cited >= 3 ? '✓' : '○') + ' ' + cited + ' source sheets marked as cited in the reflection (need 3). Mark them on the Fonti screen.')),
+    pjNav(P, 1));
+}
+/* 3. Fonti */
+function pjFonti(P){
+  function fieldRow(label, key, S1, tag){
+    const line = pjLine(function(){ return S1[key]; }, function(v){ S1[key] = v; }, label + ' · 10 words max', label);
+    const note = h('span', { class:'mono mute', style:'font-size:11px' });
+    const row = h('div', { class:'field' }, h('label', {}, label), line, h('div', { class:'row', style:'margin-top:6px' }, h('button', { class:'btn alt sm', onclick:function(){
+      const t = (S1[key] || '').trim();
+      if (!t){ note.textContent = 'Write something first.'; return; }
+      if (wordCount(t) > PPR_WORDS){ note.textContent = 'A PPR box holds ' + PPR_WORDS + ' words. Shorten it first.'; return; }
+      const boxes = pprStore().mine;
+      const free = boxes.find(function(b){ return !b.t.trim(); });
+      if (!free){ note.textContent = 'All seven PPR boxes are full.'; return; }
+      free.t = t; free.tag = tag; save();
+      note.textContent = 'Added to a PPR box, tagged ' + tag + '.';
+    } }, '→ my PPR (' + tag + ')'), note));
+    return row;
+  }
+  const cards = P.sources.map(function(s, i){
+    const d = h('details', { class:'hlpanel', open:(PJ_OPEN === i) },
+      h('summary', { class:'mono', style:'cursor:pointer;font-size:12px' }, 'Source ' + (i + 1) + (s.title.trim() ? ' · ' + s.title.trim().slice(0, 40) : '')),
+      h('div', { class:'stack', style:'margin-top:10px' },
+        pjField('Title', '', pjLine(function(){ return s.title; }, function(v){ s.title = v; }, 'Title of the source')),
+        pjField('Type', 'Article, video, chart, audio…', pjLine(function(){ return s.type; }, function(v){ s.type = v; }, 'Type of source')),
+        pjField('Author or creator', '', pjLine(function(){ return s.author; }, function(v){ s.author = v; }, 'Who made it')),
+        pjField('Date', 'If shown', pjLine(function(){ return s.date; }, function(v){ s.date = v; }, 'Date of publication')),
+        pjField('Key points', '2 to 3 sentences or a short list, in your own words', pjText(function(){ return s.key; }, function(v){ s.key = v; }, { label:'Key points', min:90 })),
+        pjField('Key words and expressions', '', pjText(function(){ return s.words; }, function(v){ s.words = v; }, { label:'Key words', min:70, nocount:true })),
+        fieldRow('A product I found', 'prod', s, 'product'),
+        fieldRow('A practice I found', 'prac', s, 'practice'),
+        fieldRow('A perspective it shows', 'pers', s, 'perspective'),
+        pjField('Which factors does it touch?', '', pjLine(function(){ return s.fact; }, function(v){ s.fact = v; }, 'Factor numbers or names')),
+        pjField('How does it compare with my community?', 'Products, practices or perspectives', pjText(function(){ return s.cmp; }, function(v){ s.cmp = v; }, { label:'Comparison', min:90 })),
+        pjField('What would I ask the author?', '', pjText(function(){ return s.ask; }, function(v){ s.ask = v; }, { label:'Question for the author', min:70, nocount:true })),
+        h('label', { style:'display:flex;gap:10px;align-items:center;font-size:15px;min-height:44px' },
+          (function(){ const c = h('input', { type:'checkbox', style:'width:24px;height:24px' }); c.checked = !!s.cited; c.addEventListener('change', function(){ s.cited = c.checked; save(); }); return c; })(),
+          'I cited this source in my initial reflection'),
+        h('div', { class:'row' }, h('button', { class:'btn alt sm', onclick:function(){
+          if (!confirm('Delete this source sheet?')) return;
+          P.sources.splice(i, 1); PJ_OPEN = -1; save(); render();
+        } }, 'Delete this sheet'))));
+    return d;
+  });
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Step 3 of 6 · Schede delle fonti'),
+    h('h2', { style:'font-size:32px' }, 'One sheet per source.'),
+    h('p', { style:'margin:0' }, 'Use it for the packet sources and for the ones you find yourself. The point is the three P\'s: what product, what practice, what perspective does this source show? Each one you find can go straight into a box of your PPR (10 words max).'),
+    cards.length ? cards : h('p', { class:'mute', style:'margin:0' }, 'No source sheets yet.'),
+    h('div', { class:'row' }, h('button', { class:'btn hot', disabled:P.sources.length >= 14, onclick:function(){
+      P.sources.push({ title:'', type:'', author:'', date:'', key:'', words:'', prod:'', prac:'', pers:'', fact:'', cmp:'', ask:'', cited:false });
+      PJ_OPEN = P.sources.length - 1; save(); render();
+    } }, '+ Add a source sheet')),
+    pjNav(P, 2));
+}
+/* 4. Piano */
+function pjPiano(P){
+  const L = P.plan;
+  const picks = L.f.map(function(f){ return f.pick; }).filter(function(x){ return x >= 0; });
+  const warn = [];
+  if (picks.length && !picks.some(function(x){ return x >= 4; })) warn.push('At least one factor must be a perspective (factor 5 or 6).');
+  if (new Set(picks).size < picks.length) warn.push('You chose the same factor twice.');
+  const goalsN = L.goals.filter(function(g){ return g.g.trim(); }).length;
+  const opts = P.factors.map(function(x, i){ return { i:i, t:'Factor ' + (i + 1) + (x.trim() ? ': ' + x.trim().slice(0, 50) : ' (empty)') }; });
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Step 4 of 6 · Piano d\'azione'),
+    h('h2', { style:'font-size:32px' }, 'Plan the research before you start it.'),
+    h('p', { style:'margin:0' }, 'A good plan stays flexible. You can change anything as the research grows.'),
+    h('h2', { style:'font-size:24px' }, 'Part 1 · Topic and community'),
+    pjField('My presentation topic', 'More than one idea is fine for now', pjText(function(){ return L.topic; }, function(v){ L.topic = v; }, { label:'Topic', min:80, nocount:true })),
+    pjField('My community or region', '', pjText(function(){ return L.community; }, function(v){ L.community = v; }, { label:'Community or region', min:70, nocount:true })),
+    h('h2', { style:'font-size:24px;margin-top:6px' }, 'Part 2 · Three factors'),
+    L.f.map(function(f, k){
+      const sel = h('select', { 'aria-label':'Factor ' + (k + 1) + ' choice', style:'width:100%;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--surf2);color:var(--text);font:400 17px var(--sans)' },
+        h('option', { value:'-1' }, '— choose from the prompt —'),
+        opts.map(function(o){ return h('option', { value:String(o.i) }, o.t); }));
+      sel.value = String(f.pick);
+      sel.addEventListener('change', function(){ f.pick = Number(sel.value); save(); render(); });
+      return h('div', { class:'stack' },
+        pjField('My factor ' + (k + 1), '', sel),
+        pjField('Why does it matter for my topic?', '', pjText(function(){ return f.why; }, function(v){ f.why = v; }, { label:'Why it matters', min:90, nocount:true })),
+        pjField('What do I need to find out?', '', pjText(function(){ return f.find; }, function(v){ f.find = v; }, { label:'What to find out', min:90, nocount:true })));
+    }),
+    warn.length ? h('div', { class:'hlpanel' }, warn.map(function(w){ return h('div', { style:'font-size:14px;color:#FFC83D' }, w); })) : null,
+    h('h2', { style:'font-size:24px;margin-top:6px' }, 'Part 3 · Gathering information'),
+    pjField('Search terms for reliable sources', '', pjText(function(){ return L.terms; }, function(v){ L.terms = v; }, { label:'Search terms', min:90, nocount:true })),
+    pjField('Specific places to look', 'Databases, libraries, magazines, newspapers, podcasts', pjText(function(){ return L.res; }, function(v){ L.res = v; }, { label:'Places to look', min:90, nocount:true })),
+    pjField('People or organizations to contact', 'In the community or region', pjText(function(){ return L.people; }, function(v){ L.people = v; }, { label:'People to contact', min:90, nocount:true })),
+    pjField('How and where I will collect and organize notes', '', pjText(function(){ return L.org; }, function(v){ L.org = v; }, { label:'Organizing notes', min:90, nocount:true })),
+    h('h2', { style:'font-size:24px;margin-top:6px' }, 'Part 4 · SMART goals'),
+    h('p', { class:'mute', style:'margin:0;font-size:14px' }, 'Three to five goals. Each one is Specific, Measurable, Achievable, Relevant and has a deadline.'),
+    L.goals.map(function(g, i){
+      return h('div', { class:'stack' },
+        pjField('Goal ' + (i + 1), '', pjText(function(){ return g.g; }, function(v){ g.g = v; }, { label:'Goal ' + (i + 1), min:80, nocount:true })),
+        pjField('Deadline', '', pjLine(function(){ return g.when; }, function(v){ g.when = v; }, 'By when?')));
+    }),
+    h('div', { class:'mono mute' }, goalsN + ' goals written · aim for 3 to 5'),
+    pjNav(P, 3));
+}
+/* 5. Feedback */
+function pjFeedback(P){
+  const F = PJ_FORMS[PJ_FB], R = P.fb[PJ_FB];
+  const total = F.groups.reduce(function(n, g){ return n + g.c.length; }, 0);
+  const sumEl = h('div', { class:'mono', style:'color:#FFC83D' });
+  function paintSum(){
+    const v = Object.keys(R.r).map(function(k){ return R.r[k].v; });
+    sumEl.textContent = 'Sì ' + v.filter(function(x){ return x === 'si'; }).length + ' · In un certo senso ' + v.filter(function(x){ return x === 'po'; }).length + ' · No ' + v.filter(function(x){ return x === 'no'; }).length + ' · not marked ' + (total - v.length) + ' of ' + total;
+  }
+  paintSum();
+  const forms = h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, Object.keys(PJ_FORMS).map(function(k){
+    return h('button', { class:'chip' + (PJ_FB === k ? ' on' : ''), 'aria-pressed':String(PJ_FB === k), onclick:function(){ PJ_FB = k; render(); } }, PJ_FORMS[k].name.toUpperCase());
+  }));
+  const who = h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, ['Self', 'Peer', 'Teacher'].map(function(w){
+    return h('button', { class:'chip' + (R.who === w ? ' on' : ''), 'aria-pressed':String(R.who === w), onclick:function(){ R.who = w; save(); render(); } }, w.toUpperCase());
+  }));
+  const rows = F.groups.map(function(g){
+    return h('div', { class:'stack' },
+      h('div', { class:'mono', style:'color:#C8FF3D;margin-top:8px' }, g.g),
+      g.c.map(function(c){
+        const key = c[0];
+        R.r[key] = R.r[key] || { v:'', ex:'' };
+        const cur = R.r[key];
+        const btns = [['si', 'Sì'], ['po', 'In un certo senso'], ['no', 'No']].map(function(o){
+          const b = h('button', { class:'chip' + (cur.v === o[0] ? ' on' : ''), style:'min-height:44px', 'aria-pressed':String(cur.v === o[0]) }, o[1].toUpperCase());
+          b.addEventListener('click', function(){
+            cur.v = cur.v === o[0] ? '' : o[0]; save();
+            Array.from(b.parentNode.children).forEach(function(x, j){ const on = cur.v === ['si', 'po', 'no'][j]; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); });
+            paintSum();
+          });
+          return b;
+        });
+        return h('div', { class:'hlpanel' },
+          h('div', { style:'font-size:16px;margin-bottom:8px' }, c[1]),
+          h('div', { style:'display:flex;gap:8px;flex-wrap:wrap' }, btns),
+          h('div', { style:'margin-top:8px' }, pjLine(function(){ return cur.ex; }, function(v){ cur.ex = v; }, 'Example from the work (quote or note it)', 'Example for: ' + c[1])));
+      }));
+  });
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Step 5 of 6 · Feedback'),
+    h('h2', { style:'font-size:32px' }, 'Judge the work. Do not rewrite it.'),
+    h('p', { style:'margin:0' }, 'Use this on a practice presentation, a practice Q&A or an initial reflection, as self, peer or teacher. For each point, find an example in the work and say whether it is there. Then write what repeats, what is strong and what to improve.'),
+    forms, h('div', { class:'mono mute', style:'font-size:11px' }, F.pts), h('div', { class:'mono mute', style:'font-size:11px' }, 'Who is giving the feedback?'), who,
+    rows, sumEl,
+    pjField('Overall: what repeats, what is strong, what to improve', '', pjText(function(){ return R.note; }, function(v){ R.note = v; }, { label:'Overall feedback', min:110, nocount:true })),
+    h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'These criteria are paraphrased for practice and are not a score. College Board\'s official feedback forms are in your teacher\'s AP Classroom. AP is a trademark of College Board, which does not endorse this tool.'),
+    pjNav(P, 4));
+}
+/* 6. Domande */
+function pjDomande(P){
+  const used = {};
+  P.qs.forEach(function(x){ if (x.q.trim() && x.ty) used[x.ty] = 1; });
+  const nUsed = Object.keys(used).length;
+  const hasCmp = !!(used.cmp || used.link);
+  const rows = P.qs.map(function(x, i){
+    const sel = h('select', { 'aria-label':'Type of question ' + (i + 1), style:'width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--surf2);color:var(--text);font:400 16px var(--sans)' },
+      h('option', { value:'' }, '— what kind of question? —'),
+      PJ_QTYPES.map(function(t){ return h('option', { value:t[0] }, t[1]); }));
+    sel.value = x.ty;
+    sel.addEventListener('change', function(){ x.ty = sel.value; save(); render(); });
+    const status = h('div', { class:'mono', style:'color:#FFC83D;font-size:12px' });
+    const audio = h('div', {});
+    const hear = h('button', { class:'btn alt sm', onclick:function(){ if (!x.q.trim()){ status.textContent = 'Write the question first.'; return; } speakIt(x.q); } }, '🔊 Hear it');
+    const rec = h('button', { class:'btn alt sm', onclick:function(){
+      if (!x.q.trim()){ status.textContent = 'Write the question first.'; return; }
+      rec.setAttribute('disabled', '');
+      recordFor(40, function(left){ status.textContent = 'Recording… ' + left + ' s'; }, function(b){ audio.replaceChildren(h('audio', { controls:true, src:URL.createObjectURL(b), style:'width:100%' })); status.textContent = 'Listen back. Was it clear, and did you keep going for 40 seconds?'; rec.removeAttribute('disabled'); }, function(m){ status.textContent = m; rec.removeAttribute('disabled'); });
+    } }, '● Answer for 40 s');
+    return h('div', { class:'hlpanel' },
+      h('div', { class:'mono mute' }, 'Question ' + (i + 1)),
+      pjText(function(){ return x.q; }, function(v){ x.q = v; }, { label:'Likely question ' + (i + 1), min:80, nocount:true }),
+      h('div', { style:'margin-top:8px' }, sel),
+      h('div', { class:'row' }, hear, rec), status, audio);
+  });
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Step 6 of 6 · Domande anticipate'),
+    h('h2', { style:'font-size:32px' }, 'Four questions you could be asked.'),
+    h('p', { style:'margin:0' }, 'After your presentation you get four questions you have not seen. They can touch any of the six factors and your research. Write four you might get, each a different kind, then rehearse answering for 40 seconds. On exam day the real questions will still surprise you, so keep training on the unseen ones in Parlato too.'),
+    rows,
+    h('div', { class:'hlpanel' }, h('div', { class:'mono', style:'color:' + (nUsed >= 4 && hasCmp ? '#3DDC84' : '#FFC83D') }, 'Quick check · not a score'),
+      h('div', { style:'font-size:14px;margin-top:6px' }, (nUsed >= 4 ? '✓' : '○') + ' ' + nUsed + ' different kinds of question out of 4'),
+      h('div', { style:'font-size:14px;margin-top:4px' }, (hasCmp ? '✓' : '○') + ' At least one asks you to compare, or to link a perspective to a product or practice')),
+    h('div', { class:'row' }, h('a', { class:'btn', href:'#/parlato' }, 'Train on unseen questions'), h('a', { class:'btn alt', href:'#/presentazione' }, 'Practice the presentation (Q1)')),
+    pjNav(P, 5));
+}
+function viewProgetto(){
+  const P = pjStore();
+  if (!PJ_STEPS.some(function(s){ return s.k === P.step; })) P.step = 'traccia';
+  const done = pjDone(P);
+  const idx = PJ_STEPS.findIndex(function(s){ return s.k === P.step; });
+  const pills = h('div', { class:'pjpills', role:'tablist', 'aria-label':'Project steps' }, PJ_STEPS.map(function(s, i){
+    return h('button', { class:'chip' + (P.step === s.k ? ' on' : ''), role:'tab', 'aria-selected':String(P.step === s.k), onclick:function(){ P.step = s.k; save(); render(); window.scrollTo(0, 0); } }, (i + 1) + ' ' + s.t.toUpperCase() + (done[s.k] ? ' ✓' : ''));
+  }));
+  const body = [pjTraccia, pjRiflessione, pjFonti, pjPiano, pjFeedback, pjDomande][idx](P);
+  return h('main', {},
+    h('div', { style:'margin:10px 0 16px' }, h('a', { href:'#/', class:'mono', style:'text-decoration:none' }, '← Today')),
+    h('h1', { style:'font-size:40px;margin-bottom:6px' }, 'Il Progetto'),
+    h('p', { class:'mute', style:'margin:0 0 14px;font-size:14px' }, 'The course project is 35% of the exam: the presentation (Q1) and the Q&A (Q2). Your work here stays on this device. Export a backup from the home screen.'),
+    pills, h('div', { class:'stack', style:'margin-top:14px' }, body));
+}
+function pjCard(){
+  const P = pjStore(), d = pjDone(P);
+  const n = PJ_STEPS.filter(function(s){ return d[s.k]; }).length;
+  const nextStep = PJ_STEPS.find(function(s){ return !d[s.k]; }) || PJ_STEPS[0];
+  return h('div', { class:'card' },
+    h('div', { class:'mono mute' }, 'Il Progetto · 35% of the exam'),
+    h('div', { style:'font-size:16px' }, 'Research steps for the course project: the prompt, your reflection, source sheets, action plan, feedback and likely questions. ' + n + ' of 6 started.'),
+    h('div', { class:'row', style:'margin-top:0' }, h('a', { class:'btn', href:'#/progetto', onclick:function(){ P.step = nextStep.k; save(); } }, n ? 'Continue: ' + nextStep.t : 'Start the project track')));
+}
+
+/* ============================================================
    ROUTER
    ============================================================ */
 function render(){
@@ -2433,6 +2779,7 @@ function render(){
   else if (route === '/ppr') view = viewPpr();
   else if (route === '/saggio') view = viewSaggio();
   else if (route === '/presentazione') view = viewPresentazione();
+  else if (route === '/progetto') view = viewProgetto();
   else if (route === '/archivio') view = viewArchivio();
   else view = viewOggi();
   app.replaceChildren.apply(app, topbar().concat([tabs(), view]).filter(Boolean));
