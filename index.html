@@ -455,6 +455,11 @@ let storageOk = true;
 function save(){
   mem = S;
   try { localStorage.setItem(KEY, JSON.stringify(S)); storageOk = true; } catch(e) { storageOk = false; }
+  try {
+    let t = document.getElementById('savedtag');
+    if (!t && document.body){ t = document.createElement('div'); t.id = 'savedtag'; t.setAttribute('role', 'status'); t.style.cssText = 'position:fixed;right:10px;bottom:10px;z-index:50;font:600 11px/1 ui-monospace,monospace;letter-spacing:.06em;padding:7px 10px;border-radius:999px;background:#0D0D11;color:#C8FF3D;border:1px solid #2a2a33;pointer-events:none;opacity:.9'; document.body.appendChild(t); }
+    if (t){ t.textContent = storageOk ? 'SAVED \u2713' : 'NOT SAVED \u2014 EXPORT BACKUP'; t.style.color = storageOk ? '#C8FF3D' : '#FF6B6B'; }
+  } catch(e) {}
 }
 function ex(id){
   if (!S.exhibits[id]) S.exhibits[id] = { step:'leggi', analysis:{ tesi:'', prove:'', registro:'', lente:'' }, answers:[], qi:0, filed:false, filedAt:'', score:0, localText:'' };
@@ -970,6 +975,7 @@ function stepRead(X, st){
     h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ st.step = 'vocab'; save(); render(); } }, 'I read it → vocabulary')));
 }
 
+function softGate(btn, ok, okLabel){ btn.removeAttribute('disabled'); btn.textContent = ok ? okLabel : 'Skip for now →'; btn.classList.toggle('alt', !ok); }
 function okSentence(t){ t = (t || '').trim(); return t.length >= 20 && t.split(/\s+/).length >= 4; }
 
 function stepVocab(X, st){
@@ -1001,10 +1007,10 @@ function stepVocab(X, st){
     });
     return h('div', { class:'vcell' }, card, chip);
   });
-  const btn = h('button', { class:'btn', disabled:true }, 'On to the breakdown →');
+  const btn = h('button', { class:'btn alt' }, 'On to the breakdown →');
   function ready(){ return X.write.every(function(w){ return okSentence(st.sentences[w.i]); }); }
-  function refresh(){ if (ready()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', ''); }
-  btn.addEventListener('click', function(){ if (!ready()) return; st.step = 'analisi'; save(); render(); });
+  function refresh(){ softGate(btn, ready(), 'On to the breakdown →'); }
+  btn.addEventListener('click', function(){ st.step = 'analisi'; save(); render(); });
   const fields = X.write.map(function(w, k){
     const v = X.vocab[w.i];
     const id = 's-' + w.i;
@@ -1038,16 +1044,16 @@ function vocabReview(X, st){
 }
 
 function stepAnalysis(X, st){
-  const btn = h('button', { class:'btn', disabled:true }, 'On to the questions →');
+  const btn = h('button', { class:'btn alt' }, 'On to the questions →');
   function ready(){ return X.analysis.every(function(f){ return (st.analysis[f.k] || '').trim().length >= 30; }); }
-  function refresh(){ if (ready()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', ''); }
-  btn.addEventListener('click', function(){ if (!ready()) return; st.step = 'domande'; st.qi = st.answers.length >= X.mc.length ? 0 : st.answers.length; save(); render(); });
+  function refresh(){ softGate(btn, ready(), 'On to the questions →'); }
+  btn.addEventListener('click', function(){ st.step = 'domande'; st.qi = st.answers.length >= X.mc.length ? 0 : st.answers.length; save(); render(); });
   const fields = X.analysis.map(function(f){
     const id = 'f-' + f.k;
     const cnt = h('div', { class:'cnt' });
     const ta = h('textarea', { id:id, 'aria-describedby':id + '-h' });
     ta.value = st.analysis[f.k] || '';
-    function upd(){ cnt.textContent = ta.value.trim().length + ' characters · min 30'; }
+    function upd(){ cnt.textContent = ta.value.trim().length + ' characters · aim for 30+, or skip'; }
     ta.addEventListener('input', function(){ st.analysis[f.k] = ta.value; save(); upd(); refresh(); });
     upd();
     return h('div', { class:'field' }, h('label', { for:id }, f.label), h('p', { class:'hint', id:id + '-h' }, f.hint), ta, cnt);
@@ -1313,10 +1319,10 @@ function audioPane(X, st){
 }
 
 function stepInsegna(X, st){
-  const btn = h('button', { class:'btn', disabled:true }, 'Ready to listen →');
+  const btn = h('button', { class:'btn alt' }, 'Ready to listen →');
   function ready(){ return st.pred.every(function(p){ return (p || '').trim().length >= 8; }); }
-  function refresh(){ if (ready()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', ''); }
-  btn.addEventListener('click', function(){ if (!ready()) return; st.step = 'gist'; save(); render(); });
+  function refresh(){ softGate(btn, ready(), 'Ready to listen →'); }
+  btn.addEventListener('click', function(){ st.step = 'gist'; save(); render(); });
   const cards = LISTEN_BASICS.map(function(g){
     return h('div', { class:'rev', style:'flex-direction:column;gap:4px' }, h('span', { class:'mono', style:'color:#C8FF3D' }, g.h.toUpperCase()), h('span', {}, g.t));
   });
@@ -1338,18 +1344,18 @@ function stepInsegna(X, st){
 }
 
 function stepGist(X, st){
-  const btn = h('button', { class:'btn', disabled:true }, 'On to the details →');
+  const btn = h('button', { class:'btn alt' }, 'On to the details →');
   const cnt = h('div', { class:'cnt' });
   const ta = h('textarea', { id:'gist', 'aria-label':'Main idea in one sentence', style:'min-height:110px' });
   ta.value = st.gist || '';
   function ready(){ return (st.plays || 0) >= 1 && (st.gist || '').trim().length >= 20; }
   function refresh(){
-    cnt.textContent = ((st.plays || 0) >= 1 ? 'Listen counted. ' : 'Play it all the way through once to unlock this. ') + (st.gist || '').trim().length + ' characters · min 20';
-    if (ready()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', '');
+    cnt.textContent = ((st.plays || 0) >= 1 ? 'Listen counted. ' : 'Play it all the way through once if you can. ') + (st.gist || '').trim().length + ' characters · aim for 20+, or skip';
+    softGate(btn, ready(), 'On to the details →');
   }
   PLAY_HOOK = refresh;
   ta.addEventListener('input', function(){ st.gist = ta.value; save(); refresh(); });
-  btn.addEventListener('click', function(){ if (!ready()) return; st.step = 'dettagli'; save(); render(); });
+  btn.addEventListener('click', function(){ st.step = 'dettagli'; save(); render(); });
   refresh();
   return h('div', { class:'card' }, segs('vocab'),
     h('div', { class:'mono mute' }, 'Step 2 of 5 · Il senso generale'),
@@ -1360,10 +1366,10 @@ function stepGist(X, st){
 }
 
 function stepDettagli(X, st){
-  const btn = h('button', { class:'btn', disabled:true }, 'On to the questions →');
+  const btn = h('button', { class:'btn alt' }, 'On to the questions →');
   function ready(){ return X.detail.every(function(f){ return (st.det[f.k] || '').trim().length >= 8; }); }
-  function refresh(){ if (ready()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', ''); }
-  btn.addEventListener('click', function(){ if (!ready()) return; st.step = 'domande'; st.qi = st.answers.length >= X.mc.length ? 0 : st.answers.length; save(); render(); });
+  function refresh(){ softGate(btn, ready(), 'On to the questions →'); }
+  btn.addEventListener('click', function(){ st.step = 'domande'; st.qi = st.answers.length >= X.mc.length ? 0 : st.answers.length; save(); render(); });
   const fields = X.detail.map(function(f){
     const id = 'd-' + f.k;
     const ta = h('textarea', { id:id, 'aria-describedby':id + '-h', style:'min-height:90px' });
@@ -1649,7 +1655,7 @@ function qaQuestion(){
       wheels ? h('div', { class:'hlpanel' }, h('div', { class:'mono mute' }, 'Skeleton for a 40-second answer · shown for your first two sets'),
         QA_FRAME.map(function(f){ return h('div', { style:'margin-top:8px;font-size:14px' }, h('strong', { style:'color:#C8FF3D' }, f.h + ': '), f.t); })) : null,
       ta,
-      h('div', { class:'row' }, h('button', { class:'btn', disabled:(QA.plays < 1 && !canText), onclick:function(){ QA.stage = 'record'; render(); } }, 'Ready to record →')));
+      h('div', { class:'row' }, h('button', { class:'btn', onclick:function(){ QA.stage = 'record'; render(); } }, 'Ready to record →')));
   }
   if (QA.stage === 'record'){
     const tm = h('div', { class:'big', style:'font-size:64px;color:#C8FF3D' }, '0:40');
