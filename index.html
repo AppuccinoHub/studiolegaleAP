@@ -2467,6 +2467,20 @@ const PJ_FORMS = {
   refl: { name:'Initial reflection', pts:'Not scored by College Board. For practice only.', groups:[
     { g:'La riflessione iniziale', c:[['r1', 'Risponde a tutte e quattro le domande, in modo logico e con dettagli'], ['r2', 'Usa informazioni di almeno tre fonti del pacchetto'], ['r3', "Collega esperienze o conoscenze culturali proprie all'argomento"], ['r4', 'Le idee seguono una progressione logica'], ['r5', 'Lessico vario e strutture grammaticali adatte']] } ] }
 };
+const PJ_PRACTICE = {
+  prompt:"Il comune di una città o di un paese di lingua italiana organizza una settimana di scambio per studenti stranieri e cerca idee su come gli ospiti dovrebbero muoversi ogni giorno. Scegli una zona, una regione o una comunità italofona e fai una ricerca approfondita su come vivono gli spostamenti le persone del posto. Prepara una presentazione per il comitato di accoglienza in cui spieghi come organizzeresti gli spostamenti degli ospiti e perché. Includi almeno tre dei seguenti fattori e spiegali con informazioni tratte dalle fonti che hai consultato. La tua presentazione non deve superare i tre minuti.",
+  factors:["Trasporto pubblico (treni regionali, autobus, metropolitana, biglietti e abbonamenti)", "Mobilità dolce (biciclette, monopattini, piste ciclabili, andare a piedi)", "Auto e parcheggio (zone a traffico limitato, car sharing, motorini, parcheggi)", "Orari e abitudini (orari dei negozi, pausa pranzo, spostamenti serali, scioperi)", "Il tempo e la puntualità (come si vivono l'attesa, i ritardi e il ritmo della giornata)", "Centro storico e vita moderna (tutela del patrimonio, sostenibilità, comodità)"],
+  rq:["Come ti sposti di solito nella tua comunità e perché?", "Se passassi una settimana in una città italiana, come ti sposteresti? Perché?", "Quali differenze o somiglianze noti tra il modo di spostarsi in Italia e quello della tua comunità?", "Pensa ai prodotti, alle pratiche e alle prospettive culturali legati agli spostamenti. Come si collegano tra loro?"]
+};
+function pjLoadPractice(P){
+  const T = pprStore();
+  const has = (T.prompt || '').trim() || P.factors.some(function(x){ return x.trim(); }) || P.rq.some(function(x){ return x.trim(); });
+  if (has && !confirm('This replaces the prompt, factors and questions you already entered. Continue?')) return;
+  T.prompt = PJ_PRACTICE.prompt;
+  P.factors = PJ_PRACTICE.factors.slice();
+  P.rq = PJ_PRACTICE.rq.slice();
+  save(); render();
+}
 var PJ_OPEN = -1;
 var PJ_FB = 'pres';
 var PJ_REC = null;
@@ -2532,6 +2546,8 @@ function pjTraccia(P){
     h('div', { class:'mono mute' }, 'Step 1 of 6 · Traccia'),
     h('h2', { style:'font-size:32px' }, 'Enter the prompt exactly as College Board gives it.'),
     h('p', { style:'margin:0' }, 'The packet arrives in January 2027 through AP Digital Portfolio. Until then, leave this empty. Studio Legale never supplies a topic, a community or sources, because choosing them is your job.'),
+    h('div', { class:'row', style:'margin-top:0' }, h('button', { class:'btn alt sm', onclick:function(){ pjLoadPractice(P); } }, 'Load the practice prompt (everyday theme, not music)')),
+    h('p', { class:'mute', style:'margin:0;font-size:12px' }, 'The practice prompt is original, written for training. It is not College Board text and has no sources: finding them is the exercise.'),
     h('div', { class:'hlpanel' }, h('div', { class:'mono', style:'color:#FFC83D' }, 'Key dates'), PJ_DATES.map(function(x){ return h('div', { style:'margin-top:8px;font-size:15px' }, h('strong', {}, x.d + ': '), x.t); })),
     pjField('The scenario', 'Paste the paragraph that describes the task. It also appears as the prompt in your Q1 presentation drill.', pjText(function(){ return T.prompt; }, function(v){ T.prompt = v; }, { label:'The scenario', min:150 })),
     h('h2', { style:'font-size:24px;margin-top:6px' }, 'The six factors'),
